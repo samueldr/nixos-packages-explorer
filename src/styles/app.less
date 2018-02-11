@@ -1,0 +1,65 @@
+.is-unfree {
+	color: #666;
+}
+
+.platforms-list {
+	margin: 0;
+	padding: 0;
+}
+.platforms-list li {
+	list-style-type: none;
+}
+.platforms-list li:not(:last-child)::after {
+	content: ", ";
+	display: inline-block;
+}
+.search-details table {
+	width: 100%;
+}
+
+table#search-results > tbody > tr:not(.details) {
+	cursor: pointer;
+}
+
+input#search {
+	display: block;
+	width: 22em;
+	max-width: 100%;
+	line-height: 2em;
+	height: 2em;
+}
+
+table#search-results button {
+	display: inline;
+	font: inherit;
+	color: inherit;
+	text-align: inherit;
+	background: transparent;
+	border: 0;
+}
+
+.pager button {
+	display: inline-block;
+	padding: 5px 14px;
+	background-color: #fff;
+	border: 1px solid #ddd;
+	border-radius: 15px;
+	color: #08c;
+	text-decoration: none;
+}
+.pager .disabled button {
+	color: #999;
+	cursor: default;
+	background-color: #fff;
+}
+
+.form-checkbox > label > span,
+.form-checkbox > label > input {
+	display: inline-block;
+	vertical-align: top;
+	line-height: inherit;
+}
+.form-checkbox > label > input {
+	margin-right: 0.4ex;
+	margin-left: 0.6ex;
+}

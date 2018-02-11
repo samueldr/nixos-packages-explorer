@@ -1,4 +1,8 @@
-@color_bsod: #004faa;
+// Remove import for production use.
+@import "nixos-site.css";
+
+@import "app";
+@import "bsod";
 
 #no-select() {
 	-webkit-touch-callout: none;
@@ -8,13 +12,6 @@
 	-ms-user-select: none;
 	user-select: none;
 	cursor: default;
-}
-
-.bsod {
-	background: @color_bsod;
-	color: #ffffff;
-	white-space: pre;
-	padding: 1em;
 }
 
 .loading {
