@@ -41,7 +41,6 @@ class App {
 		const {channel, query, unfree} = new_state;
 		if (channel !== this.channel) {
 			this.gui.set_channel(channel);
-			this.handle_channel_change(channel);
 		}
 		if (query !== this.query) {
 			this.gui.set_query(query);
@@ -61,14 +60,15 @@ class App {
 			return;
 		}
 		this.state.set_state({channel});
-		this.channel = name;
+		this.channel = channel;
+
 		// TODO: determine if we cache the channels so changing between them doesn't re-fetch.
 		fetch(`/channels/packages_${channel}.json`, {mode: "cors"})
 			.then((response) => response.json())
 			.then((data) => {
 				// Ensures we update only for the currently selected channel.
 				if (this.channel === channel) {
-					this.channel_data = data;
+					this.set_channel_data(data);
 				}
 			})
 		;
@@ -90,6 +90,13 @@ class App {
 		this.state.set_state({unfree});
 		this.unfree = name;
 		// TODO : filter and save filtered query.
+	}
+
+	/**
+	 * Updates what needs to be updated when channel data is retrieved.
+	 */
+	set_channel_data(data) {
+		this.channel_data = data;
 	}
 }
 
