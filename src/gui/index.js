@@ -31,6 +31,8 @@ class Gui {
 			this.header.$node
 		);
 		this.header.addEventListener("channel_change", (name) => this.handle_channel_change(name));
+		this.header.addEventListener("query_change", (name) => this.handle_query_change(name));
+		this.header.addEventListener("unfree_change", (name) => this.handle_unfree_change(name));
 
 		console.log("...interface created."); // eslint-disable-line
 	}
@@ -39,8 +41,28 @@ class Gui {
 		this.header.set_channels(channels);
 	}
 
+	set_channel(channel) {
+		this.header.set_channel(channel);
+	}
+
 	handle_channel_change(name) {
 		this.sendEvent(`channel_change`, name);
+	}
+
+	set_query(query) {
+		this.header.set_query(query);
+	}
+
+	handle_query_change(name) {
+		this.sendEvent(`query_change`, name);
+	}
+
+	set_unfree(unfree) {
+		this.header.set_unfree(unfree);
+	}
+
+	handle_unfree_change(name) {
+		this.sendEvent(`unfree_change`, name);
 	}
 }
 

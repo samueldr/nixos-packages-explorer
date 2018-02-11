@@ -29,9 +29,6 @@ class Header {
 	}
 
 	set_channels(channels) {
-		// Keeps the selected value...
-		const curr = this.$channel.value;
-
 		this.$channel.innerHTML = "";
 		this.$channel.appendChild(
 			html(`<option disabled selected> — Select a channel — </option>`)[0]
@@ -46,14 +43,33 @@ class Header {
 			return node;
 		}));
 
-		// ... re-select the previously selected value.
-		if (curr) {
-			this.$channel.value = curr;
+		// Re-select the previously selected value.
+		if (this.channel) {
+			this.$channel.value = this.channel;
 		}
 	}
 
-	handle_change(name, value, e) {
-		this.sendEvent(`${name}_change`, value, e);
+	set_channel(channel) {
+		this.channel = channel;
+		this.$channel.value = channel;
+		this.sendEvent("channel_change", channel);
+	}
+
+	set_query(query) {
+		this.query = query;
+		this.$query.value = query;
+		this.sendEvent("query_change", query);
+	}
+
+	set_unfree(unfree) {
+		this.unfree = unfree;
+		this.$unfree.checked = unfree;
+		this.sendEvent("unfree_change", unfree);
+	}
+
+	handle_change(name, value) {
+		this[name] = value;
+		this.sendEvent(`${name}_change`, value);
 	}
 
 }
