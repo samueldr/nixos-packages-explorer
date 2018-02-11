@@ -3,25 +3,26 @@ import append from "../lib/append";
 import on_change from "../lib/on_change";
 import header_html from "./header.part.html";
 import eventable from "../mixins/eventable";
+import gui_helpers from "../mixins/gui_helpers";
 
 /**
- * this.$node is part of the public API.
  */
 class Header {
 	constructor() {
 		eventable(this);
+		gui_helpers(this);
 
+		// Using the HTML from the part file.
 		this.$node = html(header_html)[0];
 
-		const {$node} = this;
-
+		// Attaches HTML events to form inputs.
 		[
 			"channel",
 			"query",
 			"unfree"
 		].forEach(
 			(name) => {
-				const el = $node.querySelectorAll(`[name=${name}]`)[0];
+				const el = this.$node.querySelectorAll(`[name=${name}]`)[0];
 				this[`$${name}`] = el;
 				on_change(el, (value, e) => this.handle_change(name, value, e));
 			}
@@ -50,23 +51,39 @@ class Header {
 	}
 
 	set_channel(channel) {
+		if (this.channel === channel) {
+			return;
+		}
 		this.channel = channel;
 		this.$channel.value = channel;
 		this.sendEvent("channel_change", channel);
 	}
 
 	set_query(query) {
+		if (this.query === query) {
+			return;
+		}
 		this.query = query;
 		this.$query.value = query;
 		this.sendEvent("query_change", query);
 	}
 
 	set_unfree(unfree) {
+		if (this.unfree === unfree) {
+			return;
+		}
 		this.unfree = unfree;
 		this.$unfree.checked = unfree;
 		this.sendEvent("unfree_change", unfree);
 	}
 
+	/**
+	 * Generic onchange handler.
+	 *
+	 * Assumes the state of the element is right (which it should be)
+	 * This means that we do not need to change the DOM.
+	 * Only set the value and trigger the right event.
+	 */
 	handle_change(name, value) {
 		this[name] = value;
 		this.sendEvent(`${name}_change`, value);

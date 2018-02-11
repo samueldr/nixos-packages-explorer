@@ -1,9 +1,6 @@
-import bsod from "../lib/bsod";
-import html from "../lib/html";
-import replace_node from "../lib/replace_node";
 import eventable from "../mixins/eventable";
+import gui_helpers from "../mixins/gui_helpers";
 
-import app_html from "./app.part.html";
 import Header from "./header";
 
 /**
@@ -11,58 +8,34 @@ import Header from "./header";
 class Gui {
 	constructor() {
 		eventable(this);
-		console.log("Creating interface...."); // eslint-disable-line
+		gui_helpers(this);
 
-		// Hooks this class' node to an existing element.
-		this.$node = window.document.querySelectorAll("#packages-explorer .app")[0];
-
-		// Asserts it is hooked.
-		if (!this.$node) {
-			return bsod("Couldn't hook app.");
-		}
-
-		// Inserts this app's HTML.
-		this.$node.innerHTML = "";
-		this.$node.appendChild(html(app_html)[0]);
+		this.mount("#packages-explorer .app");
 
 		this.header = new Header();
-		replace_node(
-			this.$node.querySelectorAll(".packages-explorer__header")[0],
-			this.header.$node
-		);
-		this.header.addEventListener("channel_change", (name) => this.handle_channel_change(name));
-		this.header.addEventListener("query_change", (name) => this.handle_query_change(name));
-		this.header.addEventListener("unfree_change", (name) => this.handle_unfree_change(name));
+		this.appendChild(this.header);
 
-		console.log("...interface created."); // eslint-disable-line
+		this.delegate_to(this.header, "channels");
+		this.delegate_to(this.header, "channel");
+		this.delegate_to(this.header, "query");
+		this.delegate_to(this.header, "unfree");
 	}
 
-	set_channels(channels) {
-		this.header.set_channels(channels);
-	}
+	/**
+	 * Delegates events + setter to another component.
+	 */
+	delegate_to(what, name, events = ["change"]) {
+		this[`set_${name}`] = (...args) => {
+			what[`set_${name}`](...args);
+		};
 
-	set_channel(channel) {
-		this.header.set_channel(channel);
-	}
+		events.forEach((event) => {
+			what.addEventListener(`${name}_${event}`, (...args) => this[`handle_${name}_${event}`](...args));
 
-	handle_channel_change(name) {
-		this.sendEvent(`channel_change`, name);
-	}
-
-	set_query(query) {
-		this.header.set_query(query);
-	}
-
-	handle_query_change(name) {
-		this.sendEvent(`query_change`, name);
-	}
-
-	set_unfree(unfree) {
-		this.header.set_unfree(unfree);
-	}
-
-	handle_unfree_change(name) {
-		this.sendEvent(`unfree_change`, name);
+			this[`handle_${name}_${event}`] = (...args) => {
+				this.sendEvent(`${name}_${event}`, ...args);
+			};
+		});
 	}
 }
 
