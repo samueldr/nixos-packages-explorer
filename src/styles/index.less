@@ -1,0 +1,31 @@
+@color_bsod: #004faa;
+
+#no-select() {
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+	cursor: default;
+}
+
+.bsod {
+	background: @color_bsod;
+	color: #ffffff;
+	white-space: pre;
+	padding: 1em;
+}
+
+.loading {
+	strong {
+		display: block;
+	}
+	em {
+		color: #666;
+	}
+}
+
+.app {
+	margin: 0;
+}
