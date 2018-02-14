@@ -2,6 +2,10 @@ import ready from "./lib/ready";
 import Gui from "./gui";
 import "./styles";
 import State from "./state";
+import debounce from "lodash/debounce";
+import refilter from "./refilter";
+
+const DEBOUNCE = 300;
 
 /**
  */
@@ -9,6 +13,8 @@ class App {
 	constructor() {
 		// Only "boot" the app when the DOM is ready.
 		ready(() => this.boot());
+
+		this.refilter = debounce(this.refilter, DEBOUNCE);
 	}
 
 	/**
@@ -79,7 +85,8 @@ class App {
 	 */
 	handle_query_change(query) {
 		this.state.set_state({query});
-		this.query = name;
+		this.query = query;
+		this.refilter();
 		// TODO : filter and save filtered query.
 	}
 
@@ -88,7 +95,8 @@ class App {
 	 */
 	handle_unfree_change(unfree) {
 		this.state.set_state({unfree});
-		this.unfree = name;
+		this.unfree = unfree;
+		this.refilter();
 		// TODO : filter and save filtered query.
 	}
 
@@ -97,6 +105,15 @@ class App {
 	 */
 	set_channel_data(data) {
 		this.channel_data = data;
+		this.refilter();
+	}
+
+	/**
+	 * Re-filters the data.
+	 */
+	refilter() {
+		const {query, channel_data: {packages}, unfree} = this;
+		this.filtered_packages = refilter(query, packages, {withUnfree: unfree});
 	}
 }
 
