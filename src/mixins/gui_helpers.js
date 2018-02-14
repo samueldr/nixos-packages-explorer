@@ -7,18 +7,24 @@ import each from "lodash/each";
  * this.$node is part of the semi-public API.
  *
  * Use of $node is sane, but should be avoided.
- *
- * Caution: Does not allow (for now) adding nodes; only "gui_helpers".
  */
 const gui_helpers = (self) => {
 	each(
 		// Functions to mix in.
 		{
 			appendChild(gui_node) {
-				this.$node.appendChild(gui_node.$node);
+				if (gui_node.$node) {
+					this.$node.appendChild(gui_node.$node);
+					return gui_node;
+				}
+				return this.$node.appendChild(gui_node);
 			},
 			removeChild(gui_node) {
-				this.$node.removeChild(gui_node.$node);
+				if (gui_node.$node) {
+					this.$node.removeChild(gui_node.$node);
+					return gui_node;
+				}
+				return this.$node.removeChild(gui_node);
 			},
 			mount(selector) {
 				// Hooks this class' node to an existing element.
