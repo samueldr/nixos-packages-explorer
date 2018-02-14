@@ -1,7 +1,8 @@
 import eventable from "../mixins/eventable";
 import gui_helpers from "../mixins/gui_helpers";
-
+import html from "../lib/html";
 import Header from "./header";
+import Results from "./results";
 
 /**
  */
@@ -11,14 +12,19 @@ class Gui {
 		gui_helpers(this);
 
 		this.mount("#packages-explorer .app");
-
-		this.header = new Header();
-		this.appendChild(this.header);
+		this.header = this.appendChild(new Header());
+		this.appendChild(html("<hr />")[0]);
+		this.results = this.appendChild(new Results());
 
 		this.delegate_to(this.header, "channels");
 		this.delegate_to(this.header, "channel");
 		this.delegate_to(this.header, "query");
 		this.delegate_to(this.header, "unfree");
+
+		this.delegate_to(this.results, "first", ["click"]);
+		this.delegate_to(this.results, "previous", ["click"]);
+		this.delegate_to(this.results, "next", ["click"]);
+		this.delegate_to(this.results, "last", ["click"]);
 	}
 
 	/**
@@ -30,11 +36,10 @@ class Gui {
 		};
 
 		events.forEach((event) => {
-			what.addEventListener(`${name}_${event}`, (...args) => this[`handle_${name}_${event}`](...args));
-
-			this[`handle_${name}_${event}`] = (...args) => {
-				this.sendEvent(`${name}_${event}`, ...args);
-			};
+			what.addEventListener(
+				`${name}_${event}`,
+				(...args) => this.sendEvent(`${name}_${event}`, ...args)
+			);
 		});
 	}
 }
