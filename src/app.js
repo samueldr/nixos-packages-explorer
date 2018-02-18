@@ -151,7 +151,7 @@ class App {
 		const end = page * PER_PAGE;
 
 		this.current_results = filtered_packages.slice(beg, end);
-		this.gui.update_results_count(page, filtered_packages.length);
+		this.gui.update_results(page, filtered_packages, this.current_results);
 		this.state.set_state({page});
 	}
 

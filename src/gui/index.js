@@ -25,7 +25,7 @@ class Gui {
 		this.delegate_to(this.results, "previous", ["click"]);
 		this.delegate_to(this.results, "next", ["click"]);
 		this.delegate_to(this.results, "last", ["click"]);
-		this.update_results_count = this.results.update_results_count.bind(this.results);
+		this.update_results = this.results.update_results.bind(this.results);
 	}
 
 	/**

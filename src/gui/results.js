@@ -43,12 +43,16 @@ class Results {
 	 */
 	update_results_count(page, amount) {
 		const first = (page - 1) * PER_PAGE + 1;
-		const last = page * PER_PAGE;
+		const last = Math.min(amount, page * PER_PAGE);
 		this.$results_count.innerHTML = "";
 		this.$results_count.appendChild(
 			html(`<em>Showing results ${first}-${last} of ${amount}</em>`)[0]
 		);
 		this.$pagers.forEach((p) => p.update_results_count(page, amount));
+	}
+
+	update_results(page, filtered_packages, current_results) {
+		this.update_results_count(page, filtered_packages.length);
 	}
 }
 
