@@ -3,6 +3,7 @@ import Gui from "./gui";
 import "./styles";
 import State from "./state";
 import debounce from "lodash/debounce";
+import mapValues from "lodash/mapValues";
 import refilter from "./refilter";
 import {PER_PAGE} from "./conf";
 
@@ -110,6 +111,8 @@ class App {
 	 */
 	set_channel_data(data) {
 		this.channel_data = data;
+		// Massages-in the attribute, so we can simply slice the array.
+		this.channel_data.packages = mapValues(data.packages, (p, attr) => Object.assign({attr}, p));
 		this.refilter();
 	}
 
