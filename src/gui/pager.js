@@ -1,6 +1,4 @@
 import html from "../lib/html";
-import append from "../lib/append";
-import on_change from "../lib/on_change";
 import eventable from "../mixins/eventable";
 import gui_helpers from "../mixins/gui_helpers";
 import {PER_PAGE} from "../conf";
@@ -87,4 +85,3 @@ class Pager {
 }
 
 export default Pager;
-

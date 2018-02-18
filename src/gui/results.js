@@ -1,7 +1,9 @@
 import html from "../lib/html";
 import eventable from "../mixins/eventable";
 import gui_helpers from "../mixins/gui_helpers";
+import append from "../lib/append";
 import Pager from "./pager";
+import Result from "./result";
 import {PER_PAGE} from "../conf";
 
 /**
@@ -19,6 +21,16 @@ class Results {
 		this.$pagers.push(
 			this.appendChild(new Pager())
 		);
+
+		this.$results = this.appendChild(html(`
+			<table class="table table-hover" id="search-results">
+				<thead>
+				<tr><th>Package name</th><th>Attribute name</th><th>Description</th></tr>
+				</thead>
+				<tbody>
+				</tbody>
+			</table>
+		`)[0]);
 
 		this.$pagers.push(
 			this.appendChild(new Pager())
@@ -60,6 +72,16 @@ class Results {
 	 */
 	update_results(page, filtered_packages, current_results) {
 		this.update_results_count(page, filtered_packages.length);
+		const {$results} = this;
+		const $body = $results.querySelectorAll("tbody")[0];
+		$body.innerText = "";
+		
+		let i = 0;
+		current_results.forEach((result) => {
+			i += 1;
+			const r = new Result(result, {odd: i % 2 === 0});
+			append($body, r.$nodes);
+		});
 	}
 
 	/**
