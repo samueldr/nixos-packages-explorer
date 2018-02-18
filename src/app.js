@@ -4,6 +4,7 @@ import "./styles";
 import State from "./state";
 import debounce from "lodash/debounce";
 import refilter from "./refilter";
+import {PER_PAGE} from "./conf";
 
 const DEBOUNCE = 300;
 
@@ -37,6 +38,10 @@ class App {
 		this.gui.addEventListener("channel_change", (name) => this.handle_channel_change(name));
 		this.gui.addEventListener("query_change", (name) => this.handle_query_change(name));
 		this.gui.addEventListener("unfree_change", (name) => this.handle_unfree_change(name));
+		this.gui.addEventListener("first_click", (e) => this.handle_first_click(e));
+		this.gui.addEventListener("previous_click", (e) => this.handle_previous_click(e));
+		this.gui.addEventListener("next_click", (e) => this.handle_next_click(e));
+		this.gui.addEventListener("last_click", (e) => this.handle_last_click(e));
 
 		this.state = new State();
 		this.state.addEventListener("state_change", (s) => this.handle_state_change(s));
@@ -112,8 +117,62 @@ class App {
 	 * Re-filters the data.
 	 */
 	refilter() {
+		if (!this.channel_data) { return; }
 		const {query, channel_data: {packages}, unfree} = this;
 		this.filtered_packages = refilter(query, packages, {withUnfree: unfree});
+		this.change_page();
+	}
+
+	/**
+	 * Re-pages the results according to the page wanted.
+	 */
+	change_page(delta = null, {absolute} = {absolute: false}) {
+		const {filtered_packages} = this;
+		let page = parseInt(this.state.params.page, 10);
+
+		if (absolute) {
+			page = delta;
+		}
+		else {
+			page += delta;
+		}
+
+		if (!page || page < 1) {
+			page = 1;
+		}
+
+		const max_page = this.get_last_page();
+
+		if (page > max_page) {
+			page = max_page;
+		}
+
+		const beg = (page - 1) * PER_PAGE;
+		const end = page * PER_PAGE;
+
+		this.current_results = filtered_packages.slice(beg, end);
+		this.gui.update_results_count(page, filtered_packages.length);
+		this.state.set_state({page});
+	}
+
+	get_last_page() {
+		return Math.ceil(this.filtered_packages.length / PER_PAGE);
+	}
+
+	handle_first_click() {
+		this.change_page(0, {absolute: true});
+	}
+
+	handle_previous_click() {
+		this.change_page(-1);
+	}
+
+	handle_next_click() {
+		this.change_page(+1);
+	}
+
+	handle_last_click() {
+		this.change_page(this.get_last_page(), {absolute: true});
 	}
 }
 

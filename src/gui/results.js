@@ -1,6 +1,4 @@
 import html from "../lib/html";
-import append from "../lib/append";
-import on_change from "../lib/on_change";
 import eventable from "../mixins/eventable";
 import gui_helpers from "../mixins/gui_helpers";
 import Pager from "./pager";
@@ -15,7 +13,6 @@ class Results {
 
 		this.$node = html(`<div></div>`)[0];
 		this.$results_count = this.appendChild(html(`<p />`)[0]);
-		this.update_results_count(1, 99999);
 
 		// Two pagers instances are in the page.
 		this.$pagers = [];
@@ -37,6 +34,8 @@ class Results {
 				(name) => pager.addEventListener(`${name}_click`, (...args) => this.sendEvent(`${name}_click`, ...args))
 			);
 		});
+
+		this.update_results_count(1, 0);
 	}
 
 	/**
@@ -49,6 +48,7 @@ class Results {
 		this.$results_count.appendChild(
 			html(`<em>Showing results ${first}-${last} of ${amount}</em>`)[0]
 		);
+		this.$pagers.forEach((p) => p.update_results_count(page, amount));
 	}
 }
 

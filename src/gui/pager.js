@@ -3,6 +3,7 @@ import append from "../lib/append";
 import on_change from "../lib/on_change";
 import eventable from "../mixins/eventable";
 import gui_helpers from "../mixins/gui_helpers";
+import {PER_PAGE} from "../conf";
 
 /**
  * A button for the pager.
@@ -36,7 +37,7 @@ class Button {
 
 /**
  */
-class Results {
+class Pager {
 	constructor() {
 		eventable(this);
 		gui_helpers(this);
@@ -75,7 +76,15 @@ class Results {
 		});
 	}
 
+	update_results_count(page, amount) {
+		const end = Math.ceil(amount / PER_PAGE);
+		this.first.set_disabled(page <= 1);
+		this.previous.set_disabled(page <= 1);
+		this.next.set_disabled(page >= end);
+		this.last.set_disabled(page >= end);
+	}
+
 }
 
-export default Results;
+export default Pager;
 
