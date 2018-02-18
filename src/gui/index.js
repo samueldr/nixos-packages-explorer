@@ -26,6 +26,7 @@ class Gui {
 		this.delegate_to(this.results, "next", ["click"]);
 		this.delegate_to(this.results, "last", ["click"]);
 		this.update_results = this.results.update_results.bind(this.results);
+		this.update_channel_data = this.results.update_channel_data.bind(this.results);
 	}
 
 	/**

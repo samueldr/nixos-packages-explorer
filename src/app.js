@@ -113,6 +113,7 @@ class App {
 		this.channel_data = data;
 		// Massages-in the attribute, so we can simply slice the array.
 		this.channel_data.packages = mapValues(data.packages, (p, attr) => Object.assign({attr}, p));
+		this.gui.update_channel_data(this.channel_data);
 		this.refilter();
 	}
 
