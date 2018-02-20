@@ -1,3 +1,4 @@
+import html from "./lib/html";
 //
 // Code lifted from current nixos.org website.
 //
@@ -18,37 +19,44 @@ function licenseName(license) {
 // A license can be a plain string (in which case it returns the string itself
 // as a text node), or a license object, in which case it attempts to construct
 // a link to the license's URL (if specified).
-const License = ({license}) => {
+const licenseHTML = (license) => {
 	if (!license) { return null; }
+
 	if (typeof license === "string") {
-		return license;
+		const $span = html(`<span />`);
+		$span[0].innerText = license;
+
+		return $span;
 	}
+
 	if (Array.isArray(license)) {
-		return (
-			<ul>
-				{license.map((license, key) => <li key={key}><License license={license} /></li>)}
-			</ul>
-		);
+		const $ul = html(`<ul />`);
+		license.forEach((license) => {
+			const $li = html(`<li />`)[0];
+			$li.appendChild(licenseHTML(license)[0]);
+			$ul[0].appendChild($li);
+		});
+
+		return $ul;
 	}
 
 	if (license.url) {
-		return (
-			<a
-				href={license.url}
-			>
-				{licenseName(license)}
-			</a>
-		);
+		const $link = html(`<a />`);
+		$link[0].innerText = licenseName(license);
+		$link[0].href = license["url"];
+		$link[0].rel = "nofollow";
+
+		return $link;
 	} else {
-		return licenseName(license);
+		const $span = html(`<span />`);
+		$span[0].innerText = licenseName(license);
+
+		return $span;
 	}
 }
 
-// Shortcut to use in <Maybe>.
-const maybeLicense = (license) => license && <License license={license} />;
-
 const isUnfree = (license) => license && license.free === false;
 
-export default License;
+export default licenseHTML;
 
 export {maybeLicense, isUnfree};
