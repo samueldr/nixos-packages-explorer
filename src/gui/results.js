@@ -77,11 +77,18 @@ class Results {
 		$body.innerText = "";
 		
 		let i = 0;
-		current_results.forEach((result) => {
+		this.current_result_instances = current_results.map((result) => {
 			i += 1;
 			const r = new Result(result, {odd: i % 2 === 0});
+			r.addEventListener("click", (...args) => this.on_result_click());
 			append($body, r.$nodes);
+
+			return r;
 		});
+	}
+
+	on_result_click() {
+		this.current_result_instances.forEach((r) => r.hide());
 	}
 
 	/**

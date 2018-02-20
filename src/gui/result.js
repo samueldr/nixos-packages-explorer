@@ -130,15 +130,33 @@ class Result {
 		this.$details_row = $details_row;
 		this.$row = $row;
 
-		this.show();
+		$row.addEventListener("click", (...args) => this.on_click(...args));
+	}
+
+	on_click(...args) {
+		const {shown} = this;
+		this.sendEvent("click", ...args);
+		this.shown = shown;
+		this.toggle();
 	}
 
 	show() {
+		this.shown = true;
 		this.$details_row.classList.remove("is-hidden");
 	}
 
 	hide() {
+		this.shown = false;
 		this.$details_row.classList.add("is-hidden");
+	}
+
+	toggle() {
+		if (this.shown) {
+			this.hide();
+		}
+		else {
+			this.show();
+		}
 	}
 
 	node_install() {
