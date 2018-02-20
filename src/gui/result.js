@@ -4,7 +4,7 @@ import eventable from "../mixins/eventable";
 import gui_helpers from "../mixins/gui_helpers";
 import get from "lodash/get";
 import each from "lodash/each";
-import {isUnfree} from "../license";
+import licenseHTML, {isUnfree} from "../license";
 
 /**
  * Borrows a `<tr>` from a temp table..
@@ -24,7 +24,7 @@ const td = (str = "") => html(`<table><tr><td ${str}></td></tr></table>`)[0].que
  */
 const th = (str = "") => html(`<table><tr><th ${str}></th></tr></table>`)[0].querySelectorAll("th")[0];
 
-const not_specified = html(`<em>Not specified</em>`);
+const not_specified = () => html(`<em>Not specified</em>`);
 
 /**
  * Platforms this widget shows.
@@ -78,6 +78,10 @@ class Result {
 			"unfree": "unfree",
 			"meta_position": "Nix expression",
 			"meta_platforms": "Platforms",
+			"meta_homepage": "Homepage",
+			"meta_license": "License",
+			"meta_maintainers": "Maintainers",
+			"meta_long_description": "Long description",
 		}, (label, attr) => {
 			const $tr = tr();
 
@@ -105,7 +109,9 @@ class Result {
 				const $td = td();
 				$tr.appendChild($td);
 				const fn = "node_" + attr;
-				append($td, this[fn]());
+				if (this[fn]) {
+					append($td, this[fn]());
+				}
 			}
 
 			$details.appendChild($tr);
@@ -149,13 +155,13 @@ class Result {
 
 	node_meta_position() {
 		const {result} = this;
+		const {meta: {position}} = result;
 
 		// FIXME : get the commit in a less hacky manner
 		const commit = window.APP.channel_data["commit"];
 
-		const position = get(result, "meta.position");
 		if (!position) {
-			return not_specified;
+			return not_specified();
 		}
 
 		const $link = html(`<a />`);
@@ -172,7 +178,7 @@ class Result {
 		const branch = "release-17.09";
 
 		if (!platforms || platforms.length < 1) {
-			return not_specified;
+			return not_specified();
 		}
 
 		const $list = html(`<ul class="platforms-list" />`);
@@ -193,6 +199,61 @@ class Result {
 		);
 
 		return $list;
+	}
+
+	node_meta_homepage() {
+		const {result} = this;
+		const {meta: {homepage}} = result;
+
+		if (homepage && homepage.length > 0) {
+			const $link = html(`<a />`);
+			$link[0].innerText = homepage;
+			$link[0].href = homepage;
+			$link[0].rel = "nofollow";
+
+			return $link;
+		}
+
+		return not_specified();
+	}
+
+	node_meta_license() {
+		const {result} = this;
+		const {meta: {license}} = result;
+
+		if (license) {
+			return licenseHTML(license);
+		}
+
+		return not_specified();
+	}
+
+	node_meta_maintainers() {
+		const {result} = this;
+		const {meta: {maintainers}} = result;
+
+		if (maintainers && maintainers.length > 0) {
+			const $span = html(`<span />`);
+			$span[0].innerText = maintainers.join(", ");
+
+			return $span;
+		}
+
+		return not_specified();
+	}
+
+	node_meta_long_description() {
+		const {result} = this;
+		const {meta: {longDescription}} = result;
+
+		if (longDescription && longDescription.length > 0) {
+			const $pre = html(`<pre />`);
+			$pre[0].innerText = longDescription;
+
+			return $pre;
+		}
+
+		return not_specified();
 	}
 }
 
