@@ -114,6 +114,9 @@ class Result {
 				if (this[fn]) {
 					append($td, this[fn]());
 				}
+				else {
+					append($td, html("<code>TODO</code>"));
+				}
 			}
 
 			$details.appendChild($tr);
