@@ -57,7 +57,9 @@ class Result {
 			"meta.description",
 		].forEach((attr) => {
 			const $td = td();
-			$td.innerText = get(result, attr);
+			if (get(result, attr)) {
+				$td.innerText = get(result, attr);
+			}
 			$row.appendChild($td);
 		});
 
