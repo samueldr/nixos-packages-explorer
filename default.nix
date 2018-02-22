@@ -8,6 +8,8 @@ stdenv.mkDerivation rec {
     python
   ];
 
-  # Allows use of a tarball URL.
-  release = (import ./release.nix {inherit pkgs;});
+  passthru = {
+    # Allows use of a tarball URL.
+    release = (import ./release.nix {inherit pkgs;});
+  };
 }
