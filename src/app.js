@@ -30,7 +30,7 @@ class App {
 		this.gui = new Gui();
 
 		// Fetch the list of known channels.
-		fetch("/channels/packages_channels.json", {mode: "cors"})
+		fetch("channels/packages_channels.json", {mode: "cors"})
 			.then((response) => response.json())
 			.then((channels) => this.gui.set_channels(channels))
 		;
@@ -75,7 +75,7 @@ class App {
 		this.channel = channel;
 
 		// TODO: determine if we cache the channels so changing between them doesn't re-fetch.
-		fetch(`/channels/packages_${channel}.json`, {mode: "cors"})
+		fetch(`channels/packages_${channel}.json`, {mode: "cors"})
 			.then((response) => response.json())
 			.then((data) => {
 				// Ensures we update only for the currently selected channel.
