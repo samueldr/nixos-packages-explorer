@@ -68,7 +68,11 @@ const refilter = (search = "", packages, {withUnfree = false} = {}) => {
 			return 1;
 		}
 
-		return 0;
+		if (a === b) {
+			return 0;
+		}
+		
+		return a < b ? -1 : 1;
 	});
 
 	return results.map((attr) => packages[attr]);
