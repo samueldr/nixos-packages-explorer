@@ -79,8 +79,8 @@ class Results {
 		let i = 0;
 		this.current_result_instances = current_results.map((result) => {
 			i += 1;
-			const r = new Result(result, {odd: i % 2 === 0});
-			r.addEventListener("click", (...args) => this.on_result_click());
+			const r = new Result(result, {odd: i % 2 !== 0});
+			r.addEventListener("click", () => this.on_result_click());
 			append($body, r.$nodes);
 
 			return r;
