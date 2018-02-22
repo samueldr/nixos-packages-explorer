@@ -18,7 +18,7 @@ yarn2nix.mkYarnPackage {
 
   postInstall = ''
     rm -rf website
-    yarn run preinstall
+    bash bin/webpack -p --output-path website
     mv website/ $out/website
   '';
 }
