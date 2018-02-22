@@ -58,7 +58,15 @@ class Result {
 		].forEach((attr) => {
 			const $td = td();
 			if (get(result, attr)) {
-				$td.innerText = get(result, attr);
+				if (attr === "name") {
+					const $button = html(`<button />`)[0];
+					$button.innerText = get(result, attr);
+					$td.appendChild($button);
+
+				}
+				else {
+					$td.innerText = get(result, attr);
+				}
 			}
 			$row.appendChild($td);
 		});
