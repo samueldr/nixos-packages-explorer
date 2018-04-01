@@ -1,3 +1,8 @@
+import "preact/devtools";
+import React from "react";
+import {render} from "react-dom";
+
+import ready from "./lib/ready";
 import App from "./app";
 import "./lib/polyfills/fetch";
 
@@ -9,4 +14,7 @@ import "./lib/polyfills/fetch";
  */
 
 // Starts the app.
-window.APP = new App();
+ready(() => {
+	const $node = document.getElementById("packages-explorer");
+	render(<App />, $node);
+});
