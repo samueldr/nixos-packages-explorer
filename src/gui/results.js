@@ -15,15 +15,24 @@ class Results {
 
 		this.$node = html(`<div class="results"></div>`)[0];
 		this.$node.classList.add("no-channel");
-		this.$results_count = this.appendChild(html(`<p class="results_count" />`)[0]);
+		this.$results_node = this.appendChild(html(`<div class="results-table" />`)[0]);
+		this.$channel_data = this.appendChild(html(`<p class="channel_data" />`)[0]);
+	}
+
+	results_dom() {
+		this.$results_node.innerHTML = "";
+		this.$results_count = html(`<p class="results_count" />`)[0];
+		this.$results_node.appendChild(this.$results_count);
+
+		let pager = null;
 
 		// Two pagers instances are in the page.
 		this.$pagers = [];
-		this.$pagers.push(
-			this.appendChild(new Pager())
-		);
+		pager = new Pager();
+		this.$results_node.appendChild(pager.$node)
+		this.$pagers.push(pager);
 
-		this.$results = this.appendChild(html(`
+		this.$results = html(`
 			<table class="table table-hover" id="search-results">
 				<thead>
 				<tr><th>Package name</th><th>Attribute name</th><th>Description</th></tr>
@@ -31,11 +40,13 @@ class Results {
 				<tbody>
 				</tbody>
 			</table>
-		`)[0]);
+		`)[0];
 
-		this.$pagers.push(
-			this.appendChild(new Pager())
-		);
+		this.$results_node.appendChild(this.$results);
+
+		pager = new Pager();
+		this.$results_node.appendChild(pager.$node)
+		this.$pagers.push(pager);
 
 		this.$pagers.forEach((pager) => {
 			[
@@ -48,9 +59,13 @@ class Results {
 			);
 		});
 
-		this.$pages = this.appendChild(html(`<div class="pages" />`)[0]);
-		this.$channel_data = this.appendChild(html(`<p class="channel_data" />`)[0]);
+		this.$pages = this.$results.appendChild(html(`<div class="pages" />`)[0]);
 		this.update_results_count(1, 0);
+	}
+
+	no_results_dom() {
+		this.$results_node.innerHTML = "";
+		this.$results_node.appendChild(html(`<p class="empty">No results found.</p>`)[0])
 	}
 
 	/**
@@ -72,6 +87,11 @@ class Results {
 	 * Updates results shown.
 	 */
 	update_results(page, filtered_packages, current_results) {
+		if (filtered_packages.length === 0) {
+			this.no_results_dom();
+			return;
+		}
+		this.results_dom();
 		this.update_results_count(page, filtered_packages.length);
 		const {$results} = this;
 		const $body = $results.querySelectorAll("tbody")[0];
