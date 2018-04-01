@@ -10,6 +10,14 @@ import {PER_PAGE} from "./conf";
 const DEBOUNCE = 300;
 
 /**
+ * Represents the Application.
+ *
+ * This is also where the state is kept.
+ *
+ * To get the state, use the `App.app` reference.
+ *
+ * Be mindful and only use the state if necessary (e.g. to create links).
+ * When *acting on state*, prefer using a `handle_*` function passed.
  */
 class App {
 	constructor() {
@@ -17,6 +25,9 @@ class App {
 		ready(() => this.boot());
 
 		this.refilter = debounce(this.refilter, DEBOUNCE);
+
+		// Singletonize...
+		App.app = this;
 	}
 
 	/**

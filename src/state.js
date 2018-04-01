@@ -1,5 +1,6 @@
 import queryString from "query-string";
 import isEqual from "lodash/isEqual";
+import pick from "lodash/pick";
 import eventable from "./mixins/eventable";
 
 /**
@@ -38,14 +39,18 @@ class State {
 		}
 	}
 
-	set_state(new_state, {push, force} = {}) {
+	set_state(new_state, {push, force, replace} = {}) {
 		/* eslint-disable */
 		if (push === undefined) { push = true; }
 		if (force === undefined) { force = false; }
+		if (replace === undefined) { replace = false; }
 		/* eslint-enable */
 
 		const {history} = window;
-		const params = Object.assign({}, this.params, new_state);
+		const params = replace
+			? Object.assign({}, new_state)
+			: Object.assign({}, this.params, new_state)
+		;
 		Object.keys(params).forEach((k) => {
 			if (!params[k]) {
 				Reflect.deleteProperty(params, k);
@@ -58,6 +63,8 @@ class State {
 		}
 
 		this.params = params;
+
+		console.log("set_state", params);
 
 		if (push) {
 			if (queryString.stringify(params).length > 0) {
@@ -72,6 +79,27 @@ class State {
 	clear_state(with_state = {}) {
 		this.params = {};
 		return this.set_state(with_state, {force: true});
+	}
+
+	combine_state({state, keep, replace}) {
+		return replace
+			? Object.assign({}, pick(this.params, keep), state)
+			: Object.assign({}, this.params, state)
+		;
+	}
+
+	link_to_state({state, keep, replace}) {
+		const params = this.combine_state({
+			state,
+			keep,
+			replace,
+		});
+
+		if (queryString.stringify(params).length > 0) {
+			return `?${queryString.stringify(params)}`;
+		}
+
+		return "";
 	}
 }
 
