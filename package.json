@@ -3,8 +3,8 @@
   "version": "0.0.1",
   "scripts": {},
   "devDependencies": {
-    "buble": "^0.18.0",
-    "buble-loader": "^0.4.1",
+    "buble": "^0.19",
+    "buble-loader": "^0.5",
     "css-loader": "^0.28.9",
     "eslint": "^4.16.0",
     "html-webpack-plugin": "^2.30.1",
