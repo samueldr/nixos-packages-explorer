@@ -14,6 +14,7 @@ const Header = ({query, set_query, unfree, set_unfree}) =>
 				id="search"
 				defaultValue={query}
 				onChange={(event) => set_query(event.target.value)}
+				onBlur={(event) => set_query(event.target.value, true)}
 			/>
 		</div>
 		<div class="form-checkbox">
@@ -32,11 +33,11 @@ const Header = ({query, set_query, unfree, set_unfree}) =>
 export default use(
 	[
 		"query",
-		"unfree"
+		"unfree",
 	],
 	[
 		"set_query",
-		"set_unfree"
+		"set_unfree",
 	],
 	Header
 );

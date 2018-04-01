@@ -1,7 +1,13 @@
 import React, {Component} from "react";
 import pick from "lodash/pick";
-// import queryString from "query-string";
-// import isEqual from "lodash/isEqual";
+import queryString from "query-string";
+import isEqual from "lodash/isEqual";
+
+const SYNCHRONIZED = [
+	"channel",
+	"unfree",
+	"query",
+];
 
 /**
  * App's state and callbacks.
@@ -27,6 +33,7 @@ class State extends Component {
 		};
 
 		[
+			"handle_popstate",
 			"change_page",
 			"set_channel",
 			"set_query",
@@ -34,24 +41,52 @@ class State extends Component {
 		].forEach((fn) => { this[fn] = this[fn].bind(this); });
 	}
 
-	// FIXME : synchronize with URL.
-	//	handle_popstate(e) {
-	//		if (e.state) {
-	//			const {state} = e;
-	//			this.set_state(state, {push: false});
-	//			this.sendEvent("state_change", state);
-	//		}
-	//		else {
-	//			const state = queryString.parse(location.search);
-	//			this.set_state(state, {push: false});
-	//			this.sendEvent("state_change", state);
-	//		}
-	//	}
+	handle_popstate(e) {
+		if (e.state) {
+			const {state} = e;
+			this.setState(state, {push: false});
+		}
+		else {
+			const state = queryString.parse(location.search);
+			this.setState(state, {push: false});
+		}
+	}
 
 	componentWillMount() {
+		const params = queryString.parse(location.search);
+		const {history} = window;
+		const state = Object.assign({}, params, history.state);
+		this.setState(state);
+
+
 		this.fetch_channels();
-		// FIXME : synchronize with URL.
-		//		window.onpopstate = (e) => this.handle_popstate(e);
+		window.addEventListener("popstate", this.handle_popstate);
+	}
+
+	setState(new_state, {push = true, force = false} = {}, ...args) {
+		const {history} = window;
+		const params = pick(Object.assign({}, this.state, new_state), SYNCHRONIZED);
+		Object.keys(params).forEach((k) => {
+			if (!params[k]) {
+				Reflect.deleteProperty(params, k);
+			}
+		});
+
+		if (!force && isEqual(params, this.params)) {
+			// set_state won't fire on "identity" change.
+			return Promise.resolve({});
+		}
+
+		if (push) {
+			if (queryString.stringify(params).length > 0) {
+				history.pushState(this.params, "", `?${queryString.stringify(params)}`);
+			}
+			else {
+				history.pushState(this.params, "", window.location.pathname);
+			}
+		}
+
+		return super.setState(new_state, ...args);
 	}
 
 	fetch_channels() {
@@ -82,8 +117,8 @@ class State extends Component {
 		this.setState({channel});
 	}
 
-	set_query(query) {
-		this.setState({query});
+	set_query(query, push = false) {
+		this.setState({query}, {push});
 	}
 
 	set_unfree(unfree) {
