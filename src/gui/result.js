@@ -5,6 +5,7 @@ import gui_helpers from "../mixins/gui_helpers";
 import get from "lodash/get";
 import each from "lodash/each";
 import licenseHTML, {isUnfree} from "../license";
+import Link from "./link";
 
 /**
  * Borrows a `<tr>` from a temp table..
@@ -48,6 +49,8 @@ class Result {
 		eventable(this);
 		gui_helpers(this);
 
+		const {attr} = result;
+
 		const classes = [isUnfree(result["meta"]["license"]) ? "is-unfree" : "is-free"];
 
 		const $row = tr(`class="result ${odd ? "odd" : "even"} ${classes.join(" ")}"`);
@@ -82,7 +85,20 @@ class Result {
 				</table>
 			</div>
 			`)[0]);
-		const $details = $details_row.querySelectorAll(".search-details tbody")[0];
+
+		const $details = $details_row.querySelectorAll(".search-details")[0];
+		const $link = new Link(
+			`Permalink to ${attr}`,
+			{
+				state: {attr},
+				keep: ["channel"],
+				replace: true,
+				className: "permalink",
+			}
+		);
+		$details.appendChild($link.$node);
+
+		const $details_body = $details_row.querySelectorAll(".search-details tbody")[0];
 		each({
 			"install": "Install command",
 			"unfree": "unfree",
@@ -127,7 +143,7 @@ class Result {
 				}
 			}
 
-			$details.appendChild($tr);
+			$details_body.appendChild($tr);
 		});
 
 		this.$nodes = [
