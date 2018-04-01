@@ -78,6 +78,7 @@ class App {
 		}
 		this.state.set_state({channel});
 		this.channel = channel;
+		this.gui.set_loading(true);
 
 		// TODO: determine if we cache the channels so changing between them doesn't re-fetch.
 		fetch(`channels/packages_${channel}.json`, {mode: "cors"})
@@ -86,6 +87,7 @@ class App {
 				// Ensures we update only for the currently selected channel.
 				if (this.channel === channel) {
 					this.set_channel_data(data);
+					this.gui.set_loading(false);
 				}
 			})
 		;

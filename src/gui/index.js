@@ -14,6 +14,7 @@ class Gui {
 		this.mount("#packages-explorer .app");
 		this.header = this.appendChild(new Header());
 		this.appendChild(html("<hr />")[0]);
+		this.appendChild(html("<div class='spinner'><div class='bounce1'></div><div class='bounce2'></div><div class='bounce3'></div></div>")[0]);
 		this.results = this.appendChild(new Results());
 
 		this.delegate_to(this.header, "channels");
@@ -43,6 +44,11 @@ class Gui {
 				(...args) => this.sendEvent(`${name}_${event}`, ...args)
 			);
 		});
+	}
+
+	set_loading(state) {
+		const action = state ? "add" : "remove";
+		this.$node.classList[action]("loading");
 	}
 }
 
