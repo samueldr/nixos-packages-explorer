@@ -45,6 +45,14 @@ body {
 	display: none;
 }
 
+.results {
+	opacity: 1;
+	transition: opacity 0.3s ease-in;
+}
+.results.no-channel {
+	opacity: 0;
+}
+
 table#search-results > tbody > tr:not(.details) {
 	cursor: pointer;
 }

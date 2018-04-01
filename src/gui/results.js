@@ -13,7 +13,8 @@ class Results {
 		eventable(this);
 		gui_helpers(this);
 
-		this.$node = html(`<div></div>`)[0];
+		this.$node = html(`<div class="results"></div>`)[0];
+		this.$node.classList.add("no-channel");
 		this.$results_count = this.appendChild(html(`<p class="results_count" />`)[0]);
 
 		// Two pagers instances are in the page.
@@ -101,6 +102,7 @@ class Results {
 		data.querySelectorAll(".channel")[0].innerText = "<nixpkgs>";
 		data.querySelectorAll(".commit")[0].innerText = commit;
 		this.$channel_data.appendChild(data);
+		this.$node.classList.remove("no-channel");
 	}
 }
 
