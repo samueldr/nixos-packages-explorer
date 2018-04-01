@@ -32,7 +32,12 @@ class App {
 		// Fetch the list of known channels.
 		fetch("channels/packages_channels.json", {mode: "cors"})
 			.then((response) => response.json())
-			.then((channels) => this.gui.set_channels(channels))
+			.then((channels) => {
+				this.gui.set_channels(channels);
+				if (!this.state.params["channel"]) {
+					this.gui.set_channel(channels[0]);
+				}
+			})
 		;
 
 		// Hooks GUI events
