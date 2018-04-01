@@ -19,7 +19,7 @@ class Results {
 		this.$channel_data = this.appendChild(html(`<p class="channel_data" />`)[0]);
 	}
 
-	results_dom() {
+	render_results() {
 		this.$results_node.innerHTML = "";
 		this.$results_count = html(`<p class="results_count" />`)[0];
 		this.$results_node.appendChild(this.$results_count);
@@ -63,7 +63,7 @@ class Results {
 		this.update_results_count(1, 0);
 	}
 
-	no_results_dom() {
+	render_empty() {
 		this.$results_node.innerHTML = "";
 		this.$results_node.appendChild(html(`<p class="empty">No results found.</p>`)[0]);
 	}
@@ -88,10 +88,10 @@ class Results {
 	 */
 	update_results(page, filtered_packages, current_results) {
 		if (filtered_packages.length === 0) {
-			this.no_results_dom();
+			this.render_empty();
 			return;
 		}
-		this.results_dom();
+		this.render_results();
 		this.update_results_count(page, filtered_packages.length);
 		const {$results} = this;
 		const $body = $results.querySelectorAll("tbody")[0];
