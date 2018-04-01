@@ -128,7 +128,9 @@ class App {
 	 * Re-filters the data.
 	 */
 	refilter() {
-		if (!this.channel_data) { return; }
+		if (!this.channel_data) {
+			return;
+		}
 		const {query, channel_data: {packages}, unfree} = this;
 		this.filtered_packages = refilter(query, packages, {withUnfree: unfree});
 		this.change_page();

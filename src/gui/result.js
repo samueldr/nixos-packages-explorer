@@ -64,7 +64,7 @@ class Result {
 					$td.appendChild($button);
 
 				}
-				else {
+				else {
 					$td.innerText = get(result, attr);
 				}
 			}
@@ -162,7 +162,7 @@ class Result {
 		if (this.shown) {
 			this.hide();
 		}
-		else {
+		else {
 			this.show();
 		}
 	}

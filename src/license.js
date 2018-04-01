@@ -7,11 +7,11 @@ import html from "./lib/html";
 // Use the SPDX ID if present; failing that try the long or short names. If all
 // else fails fall back on URL.
 function licenseName(license) {
-	return license.spdxId
-		|| license.fullName
-		|| license.shortName
-		|| license.url
-		|| "Licence name missing!";
+	return license.spdxId ||
+		license.fullName ||
+		license.shortName ||
+		license.url ||
+		"Licence name missing!";
 }
 
 // Given a license, or array of licenses, generate and return a DOM node
@@ -20,7 +20,9 @@ function licenseName(license) {
 // as a text node), or a license object, in which case it attempts to construct
 // a link to the license's URL (if specified).
 const licenseHTML = (license) => {
-	if (!license) { return null; }
+	if (!license) {
+		return null;
+	}
 
 	if (typeof license === "string") {
 		const $span = html(`<span />`);
@@ -31,9 +33,9 @@ const licenseHTML = (license) => {
 
 	if (Array.isArray(license)) {
 		const $ul = html(`<ul />`);
-		license.forEach((license) => {
+		license.forEach((l) => {
 			const $li = html(`<li />`)[0];
-			$li.appendChild(licenseHTML(license)[0]);
+			$li.appendChild(licenseHTML(l)[0]);
 			$ul[0].appendChild($li);
 		});
 
@@ -47,16 +49,16 @@ const licenseHTML = (license) => {
 		$link[0].rel = "nofollow";
 
 		return $link;
-	} else {
-		const $span = html(`<span />`);
-		$span[0].innerText = licenseName(license);
+	} 
+	const $span = html(`<span />`);
+	$span[0].innerText = licenseName(license);
 
-		return $span;
-	}
-}
+	return $span;
+	
+};
 
 const isUnfree = (license) => license && license.free === false;
 
 export default licenseHTML;
 
-export {maybeLicense, isUnfree};
+export {isUnfree};

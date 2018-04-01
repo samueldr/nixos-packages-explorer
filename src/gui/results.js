@@ -29,7 +29,7 @@ class Results {
 		// Two pagers instances are in the page.
 		this.$pagers = [];
 		pager = new Pager();
-		this.$results_node.appendChild(pager.$node)
+		this.$results_node.appendChild(pager.$node);
 		this.$pagers.push(pager);
 
 		this.$results = html(`
@@ -45,17 +45,17 @@ class Results {
 		this.$results_node.appendChild(this.$results);
 
 		pager = new Pager();
-		this.$results_node.appendChild(pager.$node)
+		this.$results_node.appendChild(pager.$node);
 		this.$pagers.push(pager);
 
-		this.$pagers.forEach((pager) => {
+		this.$pagers.forEach((p) => {
 			[
 				"first",
 				"previous",
 				"next",
 				"last",
 			].forEach(
-				(name) => pager.addEventListener(`${name}_click`, (...args) => this.sendEvent(`${name}_click`, ...args))
+				(name) => p.addEventListener(`${name}_click`, (...args) => this.sendEvent(`${name}_click`, ...args))
 			);
 		});
 
@@ -65,7 +65,7 @@ class Results {
 
 	no_results_dom() {
 		this.$results_node.innerHTML = "";
-		this.$results_node.appendChild(html(`<p class="empty">No results found.</p>`)[0])
+		this.$results_node.appendChild(html(`<p class="empty">No results found.</p>`)[0]);
 	}
 
 	/**

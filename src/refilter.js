@@ -45,8 +45,8 @@ const refilter = (search = "", packages, {withUnfree = false} = {}) => {
 				info["name"].toLowerCase(),
 				description.toLowerCase(),
 				longDescription.toLowerCase(),
-			], (value) => value.match(word))
-		};
+			], (value) => value.match(word));
+		}
 
 
 		let kept = true;
