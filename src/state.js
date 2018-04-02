@@ -18,6 +18,7 @@ const SYNCHRONIZED = [
 
 const CALLBACKS = [
 	"change_page",
+	"select_attr",
 	"set_channel",
 	"set_query",
 	"set_unfree",
@@ -213,6 +214,16 @@ class State extends Component {
 		this.setState({unfree});
 	}
 
+	select_attr(attr) {
+		const {selected} = this.state;
+		if (attr === selected) {
+			this.setState({selected: null});
+		}
+		else {
+			this.setState({selected: attr});
+		}
+	}
+
 	getChildContext() {
 		const {state} = this;
 
@@ -230,7 +241,10 @@ class State extends Component {
 		}
 		const {query, channel_data: {packages}, unfree} = this.state;
 		const filtered_packages = refilter(query, packages, {withUnfree: unfree});
-		this.setState({filtered_packages, loading: 0});
+		this.setState({
+			filtered_packages,
+			loading: 0
+		});
 		this.change_page();
 	}
 

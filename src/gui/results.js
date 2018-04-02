@@ -1,7 +1,7 @@
 import React from "react";
 import {use} from "../state";
 import Pager from "./pager";
-// import Result from "./result";
+import Result from "./result";
 import {PER_PAGE} from "../conf";
 
 const Commit = use(["channel_data"], [],
@@ -63,11 +63,7 @@ const Results = ({current_results, filtered_packages}) =>
 							<tbody>
 								{
 									current_results.map((r, i) =>
-										<tr key={r["attr"]} class={[i % 2 === 0 ? "even" : "odd"].join(" ")}>
-											<td colspan={3}>
-												<pre>{JSON.stringify(r, null, "  ")}</pre>
-											</td>
-										</tr>
+										<Result key={r["attr"]} even={i % 2 === 0} result={r} />
 									)
 								}
 							</tbody>
