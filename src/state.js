@@ -33,6 +33,7 @@ class State extends Component {
 		super();
 
 		this.state = {
+			loading: 0,
 			query: "",
 			unfree: false,
 			channel: null,
@@ -64,7 +65,11 @@ class State extends Component {
 		this.setState(state);
 
 
-		this.fetch_channels();
+		this.fetch_channels()
+			.then(() => {
+				this.fetch_channel();
+			})
+		;
 		window.addEventListener("popstate", this.handle_popstate);
 	}
 
@@ -77,7 +82,7 @@ class State extends Component {
 			}
 		});
 
-		if (!force && isEqual(params, this.params)) {
+		if (!force && isEqual(params, pick(this.state, SYNCHRONIZED))) {
 			// set_state won't fire on "identity" change.
 			return Promise.resolve({});
 		}
@@ -94,20 +99,43 @@ class State extends Component {
 		return super.setState(new_state, ...args);
 	}
 
+	componentDidUpdate(prev_props, prev_state) {
+		if (prev_state["channel"] !== this.state["channel"]) {
+			this.fetch_channel();
+		}
+	}
+
 	fetch_channels() {
-		this.setState({loading: true});
-		fetch("channels/packages_channels.json", {mode: "cors"})
+		this.setState({loading: this.state.loading + 1});
+
+		return fetch("channels/packages_channels.json", {mode: "cors"})
 			.then((response) => response.json())
 			.then((channels) => {
 				this.setState({
 					channels,
-					loading: false
+					loading: this.state.loading - 1
 				});
 
 				// No channel in state (from initial state)
 				if (!this.state.channel) {
 					const channel = channels[0];
 					this.setState({channel});
+				}
+			})
+		;
+
+	}
+
+	fetch_channel() {
+		const {channel} = this.state;
+		this.setState({loading: this.state.loading + 1});
+		fetch(`channels/packages_${channel}.json`, {mode: "cors"})
+			.then((response) => response.json())
+			.then((channel_data) => {
+				// Ensures we update only for the currently selected channel.
+				if (this.state.channel === channel) {
+					this.setState({channel_data});
+					this.setState({loading: this.state.loading - 1});
 				}
 			})
 		;
