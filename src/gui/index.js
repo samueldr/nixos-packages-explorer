@@ -2,6 +2,7 @@ import React from "react";
 import {use} from "../state";
 import Loading from "./loading";
 import Header from "./header";
+import Pager from "./pager";
 // import Results from "./results";
 
 const Gui = ({loading}) =>

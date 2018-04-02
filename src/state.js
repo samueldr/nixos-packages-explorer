@@ -2,11 +2,13 @@ import React, {Component} from "react";
 import pick from "lodash/pick";
 import queryString from "query-string";
 import isEqual from "lodash/isEqual";
+import {PER_PAGE} from "./conf";
 
 const SYNCHRONIZED = [
 	"channel",
 	"unfree",
 	"query",
+	"page",
 ];
 
 const CALLBACKS = [
@@ -33,11 +35,13 @@ class State extends Component {
 		super();
 
 		this.state = {
+			page: 1,
 			loading: 0,
 			query: "",
 			unfree: false,
 			channel: null,
 			channels: [],
+			filtered_packages: [],
 		};
 
 		// Binding functions to `this` for use as callbacks.
@@ -77,6 +81,9 @@ class State extends Component {
 		const {history} = window;
 		const params = pick(Object.assign({}, this.state, new_state), SYNCHRONIZED);
 		Object.keys(params).forEach((k) => {
+			if (k === "page" && params[k] <= 1) {
+				Reflect.deleteProperty(params, k);
+			}
 			if (!params[k]) {
 				Reflect.deleteProperty(params, k);
 			}
@@ -142,8 +149,36 @@ class State extends Component {
 
 	}
 
-	change_page(page) {
-		this.setState({page});
+	change_page(delta = null, {absolute} = {absolute: false}) {
+		const {filtered_packages} = this.state;
+		let page = parseInt(this.state.page, 10);
+
+		if (absolute) {
+			page = delta;
+		}
+		else {
+			page += delta;
+		}
+
+		if (!page || page < 1) {
+			page = 1;
+		}
+
+		const max_page = Math.ceil(filtered_packages.length / PER_PAGE);
+
+		if (page > max_page) {
+			page = max_page;
+		}
+
+		const beg = (page - 1) * PER_PAGE;
+		const end = page * PER_PAGE;
+
+		const current_results = filtered_packages.slice(beg, end);
+
+		this.setState({
+			page,
+			current_results
+		});
 	}
 
 	set_channel(channel) {
