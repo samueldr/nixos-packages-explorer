@@ -9,6 +9,13 @@ const SYNCHRONIZED = [
 	"query",
 ];
 
+const CALLBACKS = [
+	"change_page",
+	"set_channel",
+	"set_query",
+	"set_unfree",
+];
+
 /**
  * App's state and callbacks.
  *
@@ -32,13 +39,11 @@ class State extends Component {
 			channels: [],
 		};
 
-		[
-			"handle_popstate",
-			"change_page",
-			"set_channel",
-			"set_query",
-			"set_unfree",
-		].forEach((fn) => { this[fn] = this[fn].bind(this); });
+		// Binding functions to `this` for use as callbacks.
+		// `handle_popstate` is used to link history with state.
+		["handle_popstate"]
+			.concat(CALLBACKS)
+			.forEach((fn) => { this[fn] = this[fn].bind(this); });
 	}
 
 	handle_popstate(e) {
@@ -127,22 +132,11 @@ class State extends Component {
 
 	getChildContext() {
 		const {state} = this;
-		const {
-			change_page,
-			set_channel,
-			set_query,
-			set_unfree,
-		} = this;
 
 		return {
 			app_state: {
 				state,
-				callbacks: {
-					change_page,
-					set_channel,
-					set_query,
-					set_unfree,
-				},
+				callbacks: pick(this, CALLBACKS),
 			}
 		};
 	}
