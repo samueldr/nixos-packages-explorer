@@ -41,6 +41,7 @@ class State extends Component {
 			unfree: false,
 			channel: null,
 			channels: [],
+			channel_data: null,
 			filtered_packages: [],
 		};
 
