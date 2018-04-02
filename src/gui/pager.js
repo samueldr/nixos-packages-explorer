@@ -20,8 +20,8 @@ const Pager = ({page, filtered_packages, change_page}) => {
 	return (
 		<ul class="pager">
 			<li><Button class="first"    disabled={page <= 1}   onClick={() => change_page(1, {absolute: true}     )}>« First</Button></li>
-			<li><Button class="previous" disabled={page <= 1}   onClick={() => change_page(amount - 1              )}>‹ Previous</Button></li>
-			<li><Button class="next"     disabled={page >= end} onClick={() => change_page(amount + 1              )}>Next ›</Button></li>
+			<li><Button class="previous" disabled={page <= 1}   onClick={() => change_page(- 1                     )}>‹ Previous</Button></li>
+			<li><Button class="next"     disabled={page >= end} onClick={() => change_page(  1                     )}>Next ›</Button></li>
 			<li><Button class="last"     disabled={page >= end} onClick={() => change_page(amount, {absolute: true})}>Last »</Button></li>
 		</ul>
 	);
