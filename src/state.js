@@ -1,8 +1,13 @@
 import React, {Component} from "react";
 import pick from "lodash/pick";
 import queryString from "query-string";
+import debounce from "lodash/debounce";
 import isEqual from "lodash/isEqual";
+import mapValues from "lodash/mapValues";
 import {PER_PAGE} from "./conf";
+import refilter from "./refilter";
+
+const DEBOUNCE = 300;
 
 const SYNCHRONIZED = [
 	"channel",
@@ -43,6 +48,7 @@ class State extends Component {
 			channels: [],
 			channel_data: null,
 			filtered_packages: [],
+			current_results: [],
 		};
 
 		// Binding functions to `this` for use as callbacks.
@@ -50,6 +56,8 @@ class State extends Component {
 		["handle_popstate"]
 			.concat(CALLBACKS)
 			.forEach((fn) => { this[fn] = this[fn].bind(this); });
+
+		this.refilter = debounce(this.refilter, DEBOUNCE);
 	}
 
 	handle_popstate(e) {
@@ -110,6 +118,16 @@ class State extends Component {
 	componentDidUpdate(prev_props, prev_state) {
 		if (prev_state["channel"] !== this.state["channel"]) {
 			this.fetch_channel();
+
+			return;
+		}
+
+		const {state} = this;
+		if (
+			state["query"] !== prev_state["query"] ||
+			state["unfree"] !== prev_state["unfree"]
+		) {
+			this.refilter();
 		}
 	}
 
@@ -142,8 +160,10 @@ class State extends Component {
 			.then((channel_data) => {
 				// Ensures we update only for the currently selected channel.
 				if (this.state.channel === channel) {
+					channel_data.packages = mapValues(channel_data.packages, (p, attr) => Object.assign({attr}, p));
 					this.setState({channel_data});
 					this.setState({loading: this.state.loading - 1});
+					this.refilter();
 				}
 			})
 		;
@@ -203,6 +223,16 @@ class State extends Component {
 				callbacks: pick(this, CALLBACKS),
 			}
 		};
+	}
+
+	refilter() {
+		if (!this.state.channel_data) {
+			return;
+		}
+		const {query, channel_data: {packages}, unfree} = this.state;
+		const filtered_packages = refilter(query, packages, {withUnfree: unfree});
+		this.setState({filtered_packages});
+		this.change_page();
 	}
 
 	render({children}) {
