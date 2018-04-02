@@ -1,13 +1,11 @@
 import "./styles";
 import React from "react";
 import State from "./state";
-import Header from "./gui/header";
+import Gui from "./gui";
 
 const App = () =>
 	<State>
-		<div id="packages-explorer" class="app">
-			<Header />
-		</div>
+		<Gui />
 	</State>
 ;
 
