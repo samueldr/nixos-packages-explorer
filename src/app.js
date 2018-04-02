@@ -1,4 +1,5 @@
 import "./styles";
+import "./lib/polyfills/fetch";
 import React from "react";
 import State from "./state";
 import Gui from "./gui";
