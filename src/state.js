@@ -162,7 +162,6 @@ class State extends Component {
 				if (this.state.channel === channel) {
 					channel_data.packages = mapValues(channel_data.packages, (p, attr) => Object.assign({attr}, p));
 					this.setState({channel_data});
-					this.setState({loading: this.state.loading - 1});
 					this.refilter();
 				}
 			})
@@ -231,7 +230,7 @@ class State extends Component {
 		}
 		const {query, channel_data: {packages}, unfree} = this.state;
 		const filtered_packages = refilter(query, packages, {withUnfree: unfree});
-		this.setState({filtered_packages});
+		this.setState({filtered_packages, loading: 0});
 		this.change_page();
 	}
 
