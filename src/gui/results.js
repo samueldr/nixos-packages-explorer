@@ -1,7 +1,8 @@
 import React from "react";
 import {use} from "../state";
+import flatten from "lodash/flatten";
 import Pager from "./pager";
-import Result from "./result";
+import Result, {ResultDetails} from "./result";
 import {PER_PAGE} from "../conf";
 
 const Commit = use(["channel_data"], [],
@@ -62,9 +63,12 @@ const Results = ({current_results, filtered_packages}) =>
 							</thead>
 							<tbody>
 								{
-									current_results.map((r, i) =>
-										<Result key={r["attr"]} even={i % 2 === 0} result={r} />
-									)
+									flatten(current_results.map((r, i) =>
+										[
+										<Result key={r["attr"]} even={i % 2 === 0} result={r} />,
+										<ResultDetails key={r["attr"] + "$details"} even={i % 2 === 0} result={r} />,
+										]
+									))
 								}
 							</tbody>
 						</table>
