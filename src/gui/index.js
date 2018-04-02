@@ -2,17 +2,7 @@ import React from "react";
 import {use} from "../state";
 import Loading from "./loading";
 import Header from "./header";
-import Pager from "./pager";
-// import Results from "./results";
-
-const Commit = use(["channel_data"], [],
-	({channel_data: {commit} = {}}) =>
-		<em>
-			<tt class="channel">{"<nixpkgs>"}</tt>
-			{" "}commit{" "}
-			<span class="commit">{commit}</span>
-		</em>
-);
+import Results from "./results";
 
 const Gui = ({loading, channel_data}) =>
 	<div id="packages-explorer" class="app">
@@ -20,11 +10,7 @@ const Gui = ({loading, channel_data}) =>
 		<hr />
 		{
 			channel_data && !loading
-				? <section>
-					<Pager />
-					<Pager />
-					<Commit />
-				</section>
+				? <Results />
 				: <Loading />
 		}
 	</div>
