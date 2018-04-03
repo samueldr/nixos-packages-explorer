@@ -3,7 +3,10 @@ module.exports = {
         "browser": true,
         "es6": true
     },
-    "extends": "eslint:recommended",
+	"extends": [
+		"eslint:recommended",
+		"plugin:react/recommended"
+	],
     "parserOptions": {
         "sourceType": "module"
     },
@@ -31,7 +34,7 @@ module.exports = {
         "callback-return": "error",
         "camelcase": "off",
         "capitalized-comments": "off",
-        "class-methods-use-this": "error",
+        "class-methods-use-this": "off",
         "comma-dangle": "off",
         "comma-spacing": [
             "error",
@@ -71,7 +74,7 @@ module.exports = {
         "id-length": "off",
         "id-match": "error",
         "implicit-arrow-linebreak": [
-            "error",
+            "off",
             "beside"
         ],
         "indent": ["error", "tab"],
@@ -284,6 +287,8 @@ module.exports = {
         "yoda": [
             "error",
             "never"
-        ]
+        ],
+		"react/prop-types": "off",
+		"react/no-unknown-property": "off"
     }
 };

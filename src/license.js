@@ -1,4 +1,5 @@
-import html from "./lib/html";
+import React from "react";
+
 //
 // Code lifted from current nixos.org website.
 //
@@ -19,46 +20,32 @@ function licenseName(license) {
 // A license can be a plain string (in which case it returns the string itself
 // as a text node), or a license object, in which case it attempts to construct
 // a link to the license's URL (if specified).
-const licenseHTML = (license) => {
+const License = ({license}) => {
 	if (!license) {
 		return null;
 	}
 
 	if (typeof license === "string") {
-		const $span = html(`<span />`);
-		$span[0].innerText = license;
-
-		return $span;
+		return <span>{license}</span>;
 	}
 
 	if (Array.isArray(license)) {
-		const $ul = html(`<ul />`);
-		license.forEach((l) => {
-			const $li = html(`<li />`)[0];
-			$li.appendChild(licenseHTML(l)[0]);
-			$ul[0].appendChild($li);
-		});
-
-		return $ul;
+		return (
+			<ul>
+				{license.map((l, i) => <li key={i}><License license={l} /></li>)}
+			</ul>
+		);
 	}
 
 	if (license.url) {
-		const $link = html(`<a />`);
-		$link[0].innerText = licenseName(license);
-		$link[0].href = license["url"];
-		$link[0].rel = "nofollow";
-
-		return $link;
+		return <a href={license["url"]} rel="nofollow">{licenseName(license)}</a>;
 	} 
-	const $span = html(`<span />`);
-	$span[0].innerText = licenseName(license);
 
-	return $span;
-	
+	return <span>{licenseName(license)}</span>;
 };
 
-const isUnfree = (license) => license && license.free === false;
+export default License;
 
-export default licenseHTML;
+const isUnfree = (license) => license && license.free === false;
 
 export {isUnfree};

@@ -1,31 +1,7 @@
-import html from "../lib/html";
-import append from "../lib/append";
-import eventable from "../mixins/eventable";
-import gui_helpers from "../mixins/gui_helpers";
+import React from "react";
 import get from "lodash/get";
-import each from "lodash/each";
-import licenseHTML, {isUnfree} from "../license";
-import Link from "./link";
-
-/**
- * Borrows a `<tr>` from a temp table..
- * This doesn't work in html: `html(`<tr />`)[0]`
- */
-const tr = (str = "") => html(`<table><tr ${str}></tr></table>`)[0].querySelectorAll("tr")[0];
-
-/**
- * Borrows a `<td>` from a temp table..
- * This doesn't work in html: `html(`<td />`)[0]`
- */
-const td = (str = "") => html(`<table><tr><td ${str}></td></tr></table>`)[0].querySelectorAll("td")[0];
-
-/**
- * Borrows a `<th>` from a temp table..
- * This doesn't work in html: `html(`<th />`)[0]`
- */
-const th = (str = "") => html(`<table><tr><th ${str}></th></tr></table>`)[0].querySelectorAll("th")[0];
-
-const not_specified = () => html(`<em>Not specified</em>`);
+import {use} from "../state";
+import FormattedLicense, {isUnfree} from "../license";
 
 /**
  * Platforms this widget shows.
@@ -36,272 +12,222 @@ const PLATFORMS = [
 	"x86_64-linux",
 ];
 
-const hydraLink = (attribute, platform, branch) => `https://hydra.nixos.org/job/nixos/${branch}/nixpkgs.${attribute}.${platform}`;
+const Result = ({
+	result,
+	result: {name, attr, meta: {description} = {}},
+	even,
+	selected,
+	select_attr,
+}) =>
+	<tr
+		class={[
+			even ? "even" : "odd",
+			selected === attr ? "is-selected" : "is-not-selected",
+			isUnfree(result["meta"]["license"]) ? "is-unfree" : "is-free",
+		].join(" ")}
+		onClick={() => select_attr(attr)}
+	>
+		<td>
+			<button
+				onClick={(e) => {
+					e.stopPropagation();
+					select_attr(attr);
+				}}
+			>{name}</button>
+		</td>
+		<td>{attr}</td>
+		<td>{description}</td>
+	</tr>
+;
 
+export default use(["selected"], ["select_attr"], Result);
+
+const NotSpecified = () => <em>Not specified</em>;
+const hydraLink = (attribute, platform, branch) => `https://hydra.nixos.org/job/${branch}/nixpkgs.${attribute}.${platform}`;
 const githubLink = (commit, position) => `https://github.com/NixOS/nixpkgs/blob/${commit}/${position.replace(":", "#L")}`;
 
-/**
- * One result line.
- */
-class Result {
-	constructor(result, {odd}) {
-		this.result = result;
-		eventable(this);
-		gui_helpers(this);
-
-		const {attr} = result;
-
-		const classes = [isUnfree(result["meta"]["license"]) ? "is-unfree" : "is-free"];
-
-		const $row = tr(`class="result ${odd ? "odd" : "even"} ${classes.join(" ")}"`);
-		[
-			"name",
-			"attr",
-			"meta.description",
-		].forEach((attr) => {
-			const $td = td();
-			if (get(result, attr)) {
-				if (attr === "name") {
-					const $button = html(`<button />`)[0];
-					$button.innerText = get(result, attr);
-					$td.appendChild($button);
-
-				}
-				else {
-					$td.innerText = get(result, attr);
-				}
-			}
-			$row.appendChild($td);
-		});
-
-		const $details_row = tr(`class="details is-hidden ${odd ? "odd" : "even"} ${classes.join(" ")}"`);
-		$details_row.appendChild(td(`colspan="3"`));
-		$details_row.querySelectorAll("td")[0]
-			.appendChild(html(`
-			<div class="search-details">
-				<table>
-				<tbody>
-				</tbody>
-				</table>
-			</div>
-			`)[0]);
-
-		const $details = $details_row.querySelectorAll(".search-details")[0];
-		const $link = new Link(
-			`Permalink to ${attr}`,
-			{
-				state: {attr},
-				keep: ["channel"],
-				replace: true,
-				className: "permalink",
-			}
-		);
-		$details.appendChild($link.$node);
-
-		const $details_body = $details_row.querySelectorAll(".search-details tbody")[0];
-		each({
-			"install": "Install command",
-			"unfree": "unfree",
-			"meta_position": "Nix expression",
-			"meta_platforms": "Platforms",
-			"meta_homepage": "Homepage",
-			"meta_license": "License",
-			"meta_maintainers": "Maintainers",
-			"meta_long_description": "Long description",
-		}, (label, attr) => {
-			const $tr = tr();
-
-			if (attr === "unfree") {
-				if (isUnfree(get(result, "meta.license"))) {
-					const $td = td(`colspan="2" className="unfree-note"`);
-					append(
-						$td,
-						html(`
-							<em>
-								This package is unfree.
-								See <a href="https://nixos.org/nixpkgs/manual/#sec-allow-unfree">chapter 6.2</a> of
-								the manual for more informations.
-							</em>
-						`)
-					);
-					$tr.appendChild($td);
-				}   
-			}
-			else {
-				const $th = th();
-				$tr.appendChild($th);
-				$th.innerText = label;
-
-				const $td = td();
-				$tr.appendChild($td);
-				const fn = "node_" + attr;
-				if (this[fn]) {
-					append($td, this[fn]());
-				}
-				else {
-					append($td, html("<code>TODO</code>"));
-				}
-			}
-
-			$details_body.appendChild($tr);
-		});
-
-		this.$nodes = [
-			$row,
-			$details_row,
-		];
-
-		this.$details_row = $details_row;
-		this.$row = $row;
-
-		$row.addEventListener("click", (...args) => this.on_click(...args));
-	}
-
-	on_click(...args) {
-		const {shown} = this;
-		this.sendEvent("click", ...args);
-		this.shown = shown;
-		this.toggle();
-	}
-
-	show() {
-		this.shown = true;
-		this.$details_row.classList.remove("is-hidden");
-	}
-
-	hide() {
-		this.shown = false;
-		this.$details_row.classList.add("is-hidden");
-	}
-
-	toggle() {
-		if (this.shown) {
-			this.hide();
-		}
-		else {
-			this.show();
-		}
-	}
-
-	node_install() {
-		const {result} = this;
-		// FIXME : fetch likely channel name (nixpkgs/nixos)
-		const channel = "nixos";
-		const node = html(`
+// FIXME : fetch likely channel name (nixpkgs/nixos)
+const Install = ({result}) =>
+	<tr>
+		<th>Install command</th>
+		<td>
 			<tt>
 				<span class="command">
-					nix-env -iA ${channel}.<span class="attrname"></span>
+					nix-env -iA nixos.<span class="attrname">{result["attr"]}</span>
 				</span>
 			</tt>
-			<em class="muted">(NixOS channel)</em>
-		`);
-		node[0].querySelectorAll(".attrname")[0].innerText = result["attr"];
+			{" "}<em class="muted">(NixOS channel)</em>
+		</td>
+	</tr>
+;
 
-		return node;
-	}
-
-	node_meta_position() {
-		const {result} = this;
-		const {meta: {position}} = result;
-
-		// FIXME : get the commit in a less hacky manner
-		const commit = window.APP.channel_data["commit"];
-
-		if (!position) {
-			return not_specified();
-		}
-
-		const $link = html(`<a />`);
-		$link[0].innerText = position.replace(/:[0-9]+$/, "");
-		$link[0].href = githubLink(commit, position||"");
-
-		return $link;
-	}
-
-	node_meta_platforms() {
-		const {result} = this;
-		const {attr, meta: {platforms}} = result;
-		// FIXME : fetch branch name.
-		const branch = "release-17.09";
-
-		if (!platforms || platforms.length < 1) {
-			return not_specified();
-		}
-
-		const $list = html(`<ul class="platforms-list" />`);
-
-		append(
-			$list[0],
-			platforms
-				.filter((platform) => PLATFORMS.indexOf(platform) > -1)
-				.map((platform) => {
-					const $li = html(`<li />`)[0];
-					const $link = html(`<a />`)[0];
-					$link.appendChild(html(`<tt>${platform}</tt>`)[0]);
-					$link.href = hydraLink(attr, platform, branch);
-					$li.appendChild($link);
-
-					return $li;
-				})
+const Unfree = ({result}) => {
+	if (isUnfree(get(result, "meta.license"))) {
+		return (
+			<tr>
+				<td colspan="2" class="unfree-note">
+					<em>
+						This package is unfree.
+						See <a href="https://nixos.org/nixpkgs/manual/#sec-allow-unfree">chapter 6.2</a> of
+						the manual for more informations.
+					</em>
+				</td>
+			</tr>
 		);
-
-		return $list;
 	}
+};
 
-	node_meta_homepage() {
-		const {result} = this;
-		const {meta: {homepage}} = result;
+const Position = use(["channel_data"], [], ({channel_data: {commit}, result: {meta: {position}}}) =>
+	<tr>
+		<th>Nix expression</th>
+		<td>
+			{
+				position
+					? <a href={githubLink(commit, position||"")}>
+						{position.replace(/:[0-9]+$/, "")}
+					</a>
+					: <NotSpecified />
+			}
+		</td>
+	</tr>
+);
 
-		if (homepage && homepage.length > 0) {
-			const $link = html(`<a />`);
-			$link[0].innerText = homepage;
-			$link[0].href = homepage;
-			$link[0].rel = "nofollow";
-
-			return $link;
-		}
-
-		return not_specified();
+const channel_to_jobset = (channel) => {
+	switch (channel) {
+	case "nixos-unstable":
+		return "nixos/trunk-combined";
+	case "nixpkgs-unstable":
+		return "nixpkgs/trunk";
+	default:
+		return channel.replace(/^nixos-/, "nixos/release-");
 	}
+};
 
-	node_meta_license() {
-		const {result} = this;
-		const {meta: {license}} = result;
+// FIXME : Platforms have changed for 18.09...
+const Platform = use(["channel"], [], ({channel, result: {attr, meta: {platforms}}}) =>
+	<tr>
+		<th>Platforms</th>
+		<td>
+			{
+				!platforms || platforms.length < 1
+					? <NotSpecified />
+					: <ul class="platforms-list">
+						{
+							platforms
+								.filter((platform) => PLATFORMS.indexOf(platform) > -1)
+								.map((platform) =>
+									<li key={platform}>
+										<a href={hydraLink(attr, platform, channel_to_jobset(channel))}>
+											<tt>{platform}</tt>
+										</a>
+									</li>
+								)
+						}
+					</ul>
+			}
+		</td>
+	</tr>
+);
 
-		if (license) {
-			return licenseHTML(license);
-		}
+const Homepage = ({result: {meta: {homepage}}}) =>
+	<tr>
+		<th>Homepage</th>
+		<td>
+			{
+				homepage && homepage.length > 0
+					? <a href={homepage} rel="nofollow">{homepage}</a>
+					: <NotSpecified />
+			}
+		</td>
+	</tr>
+;
 
-		return not_specified();
-	}
+const License = ({result: {meta: {license}}}) =>
+	<tr>
+		<th>License</th>
+		<td>
+			{
+				license
+					? <FormattedLicense license={license} />
+					: <NotSpecified />
+			}
+		</td>
+	</tr>
+;
 
-	node_meta_maintainers() {
-		const {result} = this;
-		const {meta: {maintainers}} = result;
+const Maintainers = ({result: {meta: {maintainers}}}) =>
+	<tr>
+		<th>Maintainers</th>
+		<td>
+			{
+				maintainers && maintainers.length > 0
+					? <span>
+						{
+							maintainers.map((m) => ( // eslint-disable-line
+								typeof m === "string"
+									// 17.09 and before are strings.
+									? m
+									// 18.03+ are structured objects.
+									: `${m.name} <${m.email}>`
+							)).join(", ")
+						}
+					</span>
+					: <NotSpecified />
+			}
+		</td>
+	</tr>
+;
 
-		if (maintainers && maintainers.length > 0) {
-			const $span = html(`<span />`);
-			$span[0].innerText = maintainers.join(", ");
+const LongDescription = ({result: {meta: {longDescription}}}) =>
+	<tr>
+		<th>Long description</th>
+		<td>
+			{
+				longDescription && longDescription.length > 0
+					? <pre>{longDescription}</pre>
+					: <NotSpecified />
+			}
+		</td>
+	</tr>
+;
 
-			return $span;
-		}
+const ROWS = [
+	Install,
+	Unfree,
+	Position,
+	Platform,
+	Homepage,
+	License,
+	Maintainers,
+	LongDescription,
+];
 
-		return not_specified();
-	}
+const ResultDetails = ({
+	result,
+	result: {attr},
+	even,
+	selected,
+}) =>
+	<tr
+		key="details"
+		class={[
+			"details",
+			even ? "even" : "odd",
+			selected === attr ? "is-selected" : "is-hidden",
+			isUnfree(result["meta"]["license"]) ? "is-unfree" : "is-free",
+		].join(" ")}
+	>
+		<td colspan={3}>
+			<div class="search-details">
+				<table>
+					<tbody>
+						{ROWS.map((Row, i) => <Row result={result} key={i} />)}
+					</tbody>
+				</table>
+			</div>
+		</td>
+	</tr>
+		;
 
-	node_meta_long_description() {
-		const {result} = this;
-		const {meta: {longDescription}} = result;
-
-		if (longDescription && longDescription.length > 0) {
-			const $pre = html(`<pre />`);
-			$pre[0].innerText = longDescription;
-
-			return $pre;
-		}
-
-		return not_specified();
-	}
-}
-
-export default Result;
+const ResultDetailsWrapped = use(["selected"], [], ResultDetails);
+export {ResultDetailsWrapped as ResultDetails};
