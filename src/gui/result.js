@@ -81,9 +81,13 @@ const Position = use(["channel_data"], [], ({channel_data: {commit}, result: {me
 	<tr>
 		<th>Nix expression</th>
 		<td>
-			<a href={githubLink(commit, position||"")}>
-				{position.replace(/:[0-9]+$/, "")}
-			</a>
+			{
+				position
+					? <a href={githubLink(commit, position||"")}>
+						{position.replace(/:[0-9]+$/, "")}
+					</a>
+					: <NotSpecified />
+			}
 		</td>
 	</tr>
 );
