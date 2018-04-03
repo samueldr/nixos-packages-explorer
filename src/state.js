@@ -78,7 +78,6 @@ class State extends Component {
 		const state = Object.assign({}, params, history.state);
 		this.setState(state);
 
-
 		this.fetch_channels()
 			.then(() => {
 				this.fetch_channel();
