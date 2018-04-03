@@ -53,9 +53,9 @@ generate() {
 }
 
 SERIES=(
+	#nixos-17.03
 	nixos-17.09
 	nixos-18.03
-	#nixos-17.03
 	nixos-unstable
 	nixpkgs-unstable
 )
