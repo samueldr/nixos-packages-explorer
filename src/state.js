@@ -324,7 +324,7 @@ const use = (state, callback_names, Wrapped) => {
 	const C = (props, {app_state}) => {
 		const state_data = pick(app_state.state, state);
 		const callbacks = pick(app_state.callbacks, callback_names);
-		return <Wrapped {...props} {...state_data} {...callbacks} />;
+		return <Wrapped {...state_data} {...callbacks} {...props} />;
 	};
 
 	C.displayName = `use(${getDisplayName(Wrapped)})`;
