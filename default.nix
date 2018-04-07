@@ -6,6 +6,7 @@ stdenv.mkDerivation rec {
     nodejs-6_x
     yarn
     python
+    nixStable2
   ];
 
   passthru = {
