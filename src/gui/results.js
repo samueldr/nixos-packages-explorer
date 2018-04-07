@@ -12,7 +12,8 @@ const Commit = use(["channel_data"], [],
 			<em>
 				<tt class="channel">{"<nixpkgs>"}</tt>
 				{" "}commit{" "}
-				<span class="commit">{commit}</span>
+				<a href={`https://github.com/NixOS/nixpkgs-channels/commit/${commit}`} class="commit">{commit}</a>
+				
 			</em>
 		</p>
 );
