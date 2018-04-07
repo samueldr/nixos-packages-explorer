@@ -2,6 +2,7 @@ import React from "react";
 import get from "lodash/get";
 import {use} from "../state";
 import FormattedLicense, {isUnfree} from "../license";
+import Link from "../link";
 
 /**
  * Platforms this widget shows.
@@ -21,6 +22,7 @@ const Result = ({
 }) =>
 	<tr
 		class={[
+			"result",
 			even ? "even" : "odd",
 			selected === attr ? "is-selected" : "is-not-selected",
 			isUnfree(result["meta"]["license"]) ? "is-unfree" : "is-free",
@@ -224,6 +226,11 @@ const ResultDetails = ({
 						{ROWS.map((Row, i) => <Row result={result} key={i} />)}
 					</tbody>
 				</table>
+				<div class="result--permalink">
+					<Link merge={true} state={{attr}}>
+						Link to <tt>{attr}</tt>
+					</Link>
+				</div>
 			</div>
 		</td>
 	</tr>

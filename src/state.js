@@ -14,13 +14,15 @@ import refilter from "./refilter";
 const DEBOUNCE = 300;
 
 const SYNCHRONIZED = [
+	"attr",
 	"channel",
-	"unfree",
-	"query",
 	"page",
+	"query",
+	"unfree",
 ];
 
 const CALLBACKS = [
+	"apply_state",
 	"change_page",
 	"select_attr",
 	"set_channel",
@@ -33,6 +35,7 @@ const CALLBACKS = [
  * "unset" state for SYNCHRONIZED.
  */
 const INITIAL_STATE = {
+	attr: null,
 	channel: null,
 	page: 1,
 	query: "",
