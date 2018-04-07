@@ -9,7 +9,10 @@ const Button = ({disabled, ...props}) =>
 	<button
 		{...props}
 		disabled={disabled}
-		class={[props["class"], disabled ? "disabled" : ""].join(" ")}
+		class={[
+			props["class"],
+			disabled ? "disabled" : ""
+		].join(" ")}
 	/>
 ;
 
@@ -19,12 +22,15 @@ const Pager = ({page, filtered_packages, change_page}) => {
 
 	return (
 		<ul class="pager">
-			<li><Button class="first"    disabled={page <= 1}   onClick={() => change_page(1, {absolute: true}     )}>« First</Button></li>
-			<li><Button class="previous" disabled={page <= 1}   onClick={() => change_page(- 1                     )}>‹ Previous</Button></li>
-			<li><Button class="next"     disabled={page >= end} onClick={() => change_page(  1                     )}>Next ›</Button></li>
-			<li><Button class="last"     disabled={page >= end} onClick={() => change_page(amount, {absolute: true})}>Last »</Button></li>
+			<li><Button class="first" disabled={page <= 1} onClick={() => change_page(1, {absolute: true})}>« First</Button></li>
+			<li><Button class="previous" disabled={page <= 1} onClick={() => change_page(-1)}>‹ Previous</Button></li>
+			<li><Button class="next" disabled={page >= end} onClick={() => change_page(1)}>Next ›</Button></li>
+			<li><Button class="last" disabled={page >= end} onClick={() => change_page(amount, {absolute: true})}>Last »</Button></li>
 		</ul>
 	);
 };
 
-export default use(["page", "filtered_packages"], ["change_page"], Pager);
+export default use([
+	"page",
+	"filtered_packages"
+], ["change_page"], Pager);

@@ -65,8 +65,8 @@ const Results = ({current_results, filtered_packages}) =>
 								{
 									flatten(current_results.map((r, i) =>
 										[
-										<Result key={r["attr"]} even={i % 2 === 0} result={r} />,
-										<ResultDetails key={r["attr"] + "$details"} even={i % 2 === 0} result={r} />,
+											<Result key={r["attr"]} even={i % 2 === 0} result={r} />,
+											<ResultDetails key={r["attr"] + "$details"} even={i % 2 === 0} result={r} />,
 										]
 									))
 								}
