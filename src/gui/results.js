@@ -92,6 +92,7 @@ const Results = ({attr, channel_data: {packages}, current_results, filtered_pack
 					</Link>
 				</div>
 				{table}
+				<Commit />
 			</div>
 		);
 	}
