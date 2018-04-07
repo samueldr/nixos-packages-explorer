@@ -1,7 +1,11 @@
+// This file is long...
+/* eslint max-lines: "off" */
+
 import React, {Component} from "react";
 import pick from "lodash/pick";
 import queryString from "query-string";
 import debounce from "lodash/debounce";
+import fromPairs from "lodash/fromPairs";
 import isEqual from "lodash/isEqual";
 import mapValues from "lodash/mapValues";
 import {PER_PAGE} from "./conf";
@@ -22,7 +26,18 @@ const CALLBACKS = [
 	"set_channel",
 	"set_query",
 	"set_unfree",
+	"url_for_state",
 ];
+
+/**
+ * "unset" state for SYNCHRONIZED.
+ */
+const INITIAL_STATE = {
+	channel: null,
+	page: 1,
+	query: "",
+	unfree: false,
+};
 
 /**
  * App's state and callbacks.
@@ -40,17 +55,13 @@ class State extends Component {
 	constructor() {
 		super();
 
-		this.state = {
-			page: 1,
+		this.state = Object.assign({
 			loading: 0,
-			query: "",
-			unfree: false,
-			channel: null,
 			channels: [],
 			channel_data: null,
 			filtered_packages: [],
 			current_results: [],
-		};
+		}, INITIAL_STATE);
 
 		// Binding functions to `this` for use as callbacks.
 		// `handle_popstate` is used to link history with state.
@@ -62,14 +73,16 @@ class State extends Component {
 	}
 
 	handle_popstate(e) {
+		let state = {};
 		if (e.state) {
-			const {state} = e;
-			this.setState(state, {push: false});
+			state = e["state"];
 		}
 		else {
-			const state = queryString.parse(location.search);
-			this.setState(state, {push: false});
+			state = queryString.parse(location.search);
 		}
+		const new_state = fromPairs(SYNCHRONIZED.map((name) => [name, INITIAL_STATE[name]]));
+
+		this.setState(Object.assign(new_state, state), {push: false});
 	}
 
 	componentWillMount() {
@@ -88,15 +101,7 @@ class State extends Component {
 
 	setState(new_state, {push = true, force = false} = {}, ...args) {
 		const {history} = window;
-		const params = pick(Object.assign({}, this.state, new_state), SYNCHRONIZED);
-		Object.keys(params).forEach((k) => {
-			if (k === "page" && params[k] <= 1) {
-				Reflect.deleteProperty(params, k);
-			}
-			if (!params[k]) {
-				Reflect.deleteProperty(params, k);
-			}
-		});
+		const params = this.url_params_for_state(new_state);
 
 		if (!force && isEqual(params, pick(this.state, SYNCHRONIZED))) {
 			// set_state won't fire on "identity" change.
@@ -105,10 +110,10 @@ class State extends Component {
 
 		if (push) {
 			if (queryString.stringify(params).length > 0) {
-				history.pushState(this.params, "", `?${queryString.stringify(params)}`);
+				history.pushState(params, "", `?${queryString.stringify(params)}`);
 			}
 			else {
-				history.pushState(this.params, "", window.location.pathname);
+				history.pushState(params, "", window.location.pathname);
 			}
 		}
 
@@ -245,6 +250,58 @@ class State extends Component {
 			loading: 0
 		});
 		this.change_page();
+	}
+
+	/**
+	 * Given a state, applies it.
+	 */
+	apply_state(state, {merge = true}) {
+		let new_state = {};
+		if (!merge) {
+			new_state = fromPairs(SYNCHRONIZED.map((name) => [name, INITIAL_STATE[name]]));
+		}
+		new_state = Object.assign(
+			new_state,
+			state
+		);
+		this.setState(new_state);
+	}
+
+	/**
+	 * Gives an URL for the new state given.
+	 */
+	url_for_state(state, {merge = true}) {
+		let params = Object.assign({}, state);
+		if (merge) {
+			params = this.url_params_for_state(state);
+		}
+
+		const {pathname} = window.location;
+
+		if (queryString.stringify(params).length > 0) {
+			return `${pathname}?${queryString.stringify(params)}`;
+		}
+
+		return pathname;
+	}
+
+	/**
+	 * Given a state, returns the (merged) current state and
+	 * new state parameters for URL generation.
+	 */
+	url_params_for_state(state) {
+		const params = pick(Object.assign({}, this.state, state), SYNCHRONIZED);
+
+		Object.keys(params).forEach((k) => {
+			if (k === "page" && params[k] <= 1) {
+				Reflect.deleteProperty(params, k);
+			}
+			if (!params[k]) {
+				Reflect.deleteProperty(params, k);
+			}
+		});
+
+		return params;
 	}
 
 	render({children}) {
