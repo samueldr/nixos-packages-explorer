@@ -1,5 +1,2 @@
 
-	This is a working repository.
-
-	You might want to go upstream.
-	
+See: https://github.com/samueldr/nixos-homepage/tree/feature/packages-explorer
