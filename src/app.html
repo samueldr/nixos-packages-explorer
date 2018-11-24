@@ -3,14 +3,34 @@
 	<head>
 		<meta charset="utf-8">
 		<title>Search NixOS packages</title>
-		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/2.3.2/css/bootstrap.min.css" /> 
 	</head>
-	<body>
-		<div id="packages-explorer">
-			<div class="app">
-				<noscript>Sorry, you need to enable JavaScript to run this app.</noscript>
-				<div class="loading">
-					Loading...
+	<body class="nix-samueldr-com">
+		<div class="navbar navbar-fixed-top">
+			<div class="navbar-inner">
+				<div class="container">
+					<ul>
+						<li class="brand">
+							<a href="https://nix.samueldr.com/">nix.samueldr.com</a>
+						</li>
+					</ul>
+					<ul class="nav">
+						<li>
+							<a href="https://logs.nix.samueldr.com/">Logs</a>
+						</li>
+						<li>
+							<a class="active" href="https://nix.samueldr.com/explorer">Packages</a>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</div>
+		<div class="container main">
+			<div id="packages-explorer">
+				<div class="app">
+					<noscript>Sorry, you need to enable JavaScript to run this app.</noscript>
+					<div class="loading">
+						Loading...
+					</div>
 				</div>
 			</div>
 		</div>
