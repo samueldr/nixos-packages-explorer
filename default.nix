@@ -1,12 +1,12 @@
-{ pkgs ? import <nixpkgs> {} }:
+{ pkgs ? import (fetchTarball channel:nixos-18.09) {} }:
 with pkgs;
 stdenv.mkDerivation rec {
   name = "nixos-packages-explorer-env";
   buildInputs = [
-    nodejs-6_x
+    nodejs-10_x
     yarn
     python
-    nixStable2
+    nix
   ];
 
   passthru = {
