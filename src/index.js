@@ -4,7 +4,7 @@ import {render} from "react-dom";
 
 import ready from "./lib/ready";
 import App from "./app";
-import "whatwg-fetch";
+import "./lib/polyfills/fetch";
 
 /**
  * Entry-point of the application.
