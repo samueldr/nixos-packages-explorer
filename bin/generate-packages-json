@@ -37,10 +37,10 @@ generate() {
 
 	nixpkgs=$(nix-instantiate --find-file nixpkgs -I nixpkgs="${NIXPKGS}")
 
-	(echo -n '{ "commit": "' && cat $nixpkgs/.git-revision && echo -n '",' && \
+	(echo -n '{ "commit": "' && ( cat $nixpkgs/.git-revision || printf "unknown" ) && echo -n '",' && \
 	 echo -n '"channel_name":"'${CHANNEL_NAME}'",' && \
 	 echo -n '"packages":' \
-	  && nix-env -f '<nixpkgs>' -I nixpkgs=${NIXPKGS} -qa --json --arg config '{allowUnfree = true;}' \
+	  && nix-env -f '<nixpkgs>' -I nixpkgs=${NIXPKGS} -qa --json --arg config 'import ../packages-config.nix' \
 	  && echo -n '}') \
 	  | sed "s|$nixpkgs/||g" | gzip -9 > "${FILENAME}.tmp"
 
