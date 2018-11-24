@@ -16,9 +16,16 @@ yarn2nix.mkYarnPackage {
   yarnLock = ./yarn.lock;
   yarnNix = ./yarn.nix;
 
-  postInstall = ''
+  # FIXME: better understanding on how to build the frontend app...
+  installPhase = ''
+    runHook preInstall
+    mkdir -p $out
     rm -rf website
     bash bin/webpack -p --output-path website
     mv website/ $out/website
+    runHook postInstall
   '';
+
+  # FIXME:  `doDist = false;` doesn't skip distPhase! 😲
+  distPhase = "echo skipping...";
 }
