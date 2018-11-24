@@ -26,8 +26,10 @@ series_array() {
 generate() {
 	local CHANNEL="$1"
 	shift
+	local CHANNEL_NAME="$1"
+	shift
 	local NIXPKGS="https://nixos.org/channels/${CHANNEL}/nixexprs.tar.xz"
-	local FILENAME="packages_${CHANNEL}.json.gz"
+	local FILENAME="packages-${CHANNEL}.json.gz"
 
 	mkdir -p tmp
 	(
@@ -35,7 +37,9 @@ generate() {
 
 	nixpkgs=$(nix-instantiate --find-file nixpkgs -I nixpkgs="${NIXPKGS}")
 
-	(echo -n '{ "commit": "' && cat $nixpkgs/.git-revision && echo -n '","packages":' \
+	(echo -n '{ "commit": "' && cat $nixpkgs/.git-revision && echo -n '",' && \
+	 echo -n '"channel_name":"'${CHANNEL_NAME}'",' && \
+	 echo -n '"packages":' \
 	  && nix-env -f '<nixpkgs>' -I nixpkgs=${NIXPKGS} -qa --json --arg config '{allowUnfree = true;}' \
 	  && echo -n '}') \
 	  | sed "s|$nixpkgs/||g" | gzip -9 > "${FILENAME}.tmp"
@@ -64,7 +68,7 @@ SERIES=(
 )
 
 for series in "${SERIES[@]}"; do
-	generate "$series"
+	generate "$series" $(echo "$series" | cut -d'-' -f1)
 done
 
-series_array "${SERIES[@]}" > ${PUBLIC}/packages_channels.json
+series_array "${SERIES[@]}" > ${PUBLIC}/packages-channels.json
