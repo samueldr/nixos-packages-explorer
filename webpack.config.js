@@ -1,12 +1,13 @@
 /* global require, module, __dirname */
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const path = require("path");
+const project_dir = path.resolve(__dirname);
 
-module.exports = {
+module.exports = (env, argv) => ({
 	entry: "./src/index.js",
 	output: {
 		filename: "bundle.js",
-		path: path.resolve(__dirname, "dist")
+		path: path.resolve(project_dir, "dist"),
 	},
 	resolve: {
 		alias: {
@@ -17,13 +18,13 @@ module.exports = {
 		}
 	},
 	module: {
-		loaders: [
+		rules: [
 			{
 				test: /.js$/,
 				// ES2015 to JS, without some features:
 				// → https://buble.surge.sh/guide/
 				loaders: "buble-loader",
-				include: path.join(__dirname, "src"),
+				include: path.join(project_dir, "src"),
 				query: {objectAssign: "Object.assign"}
 			},
 			{
@@ -46,4 +47,4 @@ module.exports = {
 			template: "src/app.html",
 		})
 	]
-};
+});
