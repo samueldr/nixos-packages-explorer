@@ -14,14 +14,15 @@
     "raw-loader": "^0.5.1",
     "style-loader": "^0.20.1",
     "uglifyjs-webpack-plugin": "^1.1.6",
-    "webpack": "^3.10.0",
-    "webpack-dev-server": "^2.11.1"
+    "webpack": "^4.29",
+    "webpack-dev-server": "^3.2"
   },
   "dependencies": {
     "lodash": "^4.17.4",
     "preact": "^8",
     "preact-compat": "^3",
     "query-string": "^5.0.1",
+    "webpack-cli": "^3.3",
     "whatwg-fetch": "^3.0.0"
   }
 }
