@@ -1,4 +1,5 @@
-{ pkgs ? import (fetchTarball channel:nixos-18.09) {} }:
+{ pkgs ? import (fetchTarball channel:nixos-19.03) {} }:
+
 with pkgs;
 stdenv.mkDerivation rec {
   name = "nixos-packages-explorer-env";
