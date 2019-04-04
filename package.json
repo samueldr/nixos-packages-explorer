@@ -21,7 +21,7 @@
     "lodash": "^4.17.4",
     "preact": "^8",
     "preact-compat": "^3",
-    "query-string": "^5.0.1",
+    "query-string": "^6.4",
     "webpack-cli": "^3.3",
     "whatwg-fetch": "^3.0.0"
   }
