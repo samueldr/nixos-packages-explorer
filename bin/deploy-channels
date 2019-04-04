@@ -18,7 +18,6 @@ rm -rf channels/
 bash bin/generate-packages-json
 
 # The copied result is read-only.
-# This fixes it.
 ssh "$DEPLOY_SERVER" chmod +w "$DEPLOY_PATH"
 
 # Copies the new channel data.
