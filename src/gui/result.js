@@ -5,7 +5,8 @@ import FormattedLicense, {isUnfree} from "../license";
 import Link from "../link";
 
 /**
- * Platforms this widget shows.
+ * All known platforms the widget can show.
+ * Further functions will filter the ones to show.
  */
 const PLATFORMS = [
 	"x86_64-linux",
@@ -116,6 +117,12 @@ const Platform = ({platform, attr, channel}) =>
 	</li>
 ;
 
+/**
+ * Removes non-nixos platforms from nixos channels.
+ */
+const platforms_for_channel = (channel) =>
+	(platform) => !(channel.match(/^nixos-/) && platform.match(/-darwin$/));
+
 const Platforms = use(["channel"], [], ({channel, result: {attr, meta: {platforms}}}) =>
 	<tr>
 		<th>Platforms</th>
@@ -125,6 +132,7 @@ const Platforms = use(["channel"], [], ({channel, result: {attr, meta: {platform
 					: <ul class="platforms-list">
 						{
 							PLATFORMS
+								.filter(platforms_for_channel(channel))
 								.filter((platform) => platforms.indexOf(platform) > -1)
 								.map((platform) => <Platform key={platform} platform={platform} attr={attr} channel={channel} />)
 						}
