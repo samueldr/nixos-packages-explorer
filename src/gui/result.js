@@ -174,17 +174,11 @@ const Maintainers = ({result: {meta: {maintainers}}}) =>
 		<td>
 			{
 				maintainers && maintainers.length > 0
-					? <span>
-						{
-							maintainers.map((m) => ( // eslint-disable-line
-								typeof m === "string"
-									// 17.09 and before are strings.
-									? m
-									// 18.03+ are structured objects.
-									: `${m.name} <${m.email}>`
-							)).join(", ")
-						}
-					</span>
+					? <span>{
+						maintainers
+							.map((m) => `${m.name} <${m.email}>`)
+							.join(", ")
+					}</span>
 					: <NotSpecified />
 			}
 		</td>
