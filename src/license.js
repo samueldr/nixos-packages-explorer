@@ -8,11 +8,11 @@ import React from "react";
 // Use the long name first; failing that try the SPDX ID or short name.
 // If all else fails fall back on URL.
 function licenseName(license) {
-	return license.fullName
-		|| license.spdxId
-		|| license.shortName
-		|| license.url
-		|| "(Licence name missing)";
+	return license.fullName ||
+		license.spdxId ||
+		license.shortName ||
+		license.url ||
+		"(Licence name missing)";
 }
 
 // Given a license, or array of licenses, generate and return a DOM node
