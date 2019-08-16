@@ -10,6 +10,8 @@ pkgs.mkShell {
     nodejs-10_x
     yarn
     nix
+    # For channels json file generation
+    python
   ];
 
   shellHook = ''
