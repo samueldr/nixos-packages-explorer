@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "scripts": {},
   "devDependencies": {
-    "buble": "^0.19",
+    "buble": "^0.19.8",
     "buble-loader": "^0.5",
     "css-loader": "^3.2.0",
     "eslint": "^5.9.0",
