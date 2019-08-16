@@ -8,9 +8,10 @@ import Link from "../link";
  * Platforms this widget shows.
  */
 const PLATFORMS = [
-	// "i686-linux",
-	// "aarch64-linux",
 	"x86_64-linux",
+	"aarch64-linux",
+	"x86_64-darwin",
+	"i686-linux",
 ];
 
 const Result = ({
@@ -45,7 +46,7 @@ const Result = ({
 export default use(["selected"], ["select_attr"], Result);
 
 const NotSpecified = () => <em>Not specified</em>;
-const hydraLink = (attribute, platform, branch) => `https://hydra.nixos.org/job/${branch}/nixpkgs.${attribute}.${platform}`;
+const hydraLink = (attribute, platform, branch) => `https://hydra.nixos.org/job/${branch}/${attribute}.${platform}`;
 const githubLink = (commit, position) => `https://github.com/NixOS/nixpkgs/blob/${commit}/${position.replace(":", "#L")}`;
 
 const Install = use(["channel_data"], [], ({result, channel_data: {channel_name}}) =>
@@ -104,25 +105,28 @@ const channel_to_jobset = (channel) => {
 	}
 };
 
-// FIXME : Platforms have changed for 18.09...
-const Platform = use(["channel"], [], ({channel, result: {attr, meta: {platforms}}}) =>
+const normalize_attrname = (name, channel) =>
+	channel.match(/^nixos-/) ? `nixpkgs.${name}` : name;
+
+const Platform = ({platform, attr, channel}) =>
+	<li key={platform}>
+		<a href={hydraLink(normalize_attrname(attr, channel), platform, channel_to_jobset(channel))}>
+			<tt>{platform}</tt>
+		</a>
+	</li>
+;
+
+const Platforms = use(["channel"], [], ({channel, result: {attr, meta: {platforms}}}) =>
 	<tr>
 		<th>Platforms</th>
 		<td>
 			{
-				!platforms || platforms.length < 1
-					? <NotSpecified />
+				!platforms || platforms.length < 1 ? <NotSpecified />
 					: <ul class="platforms-list">
 						{
-							platforms
-								.filter((platform) => PLATFORMS.indexOf(platform) > -1)
-								.map((platform) =>
-									<li key={platform}>
-										<a href={hydraLink(attr, platform, channel_to_jobset(channel))}>
-											<tt>{platform}</tt>
-										</a>
-									</li>
-								)
+							PLATFORMS
+								.filter((platform) => platforms.indexOf(platform) > -1)
+								.map((platform) => <Platform key={platform} platform={platform} attr={attr} channel={channel} />)
 						}
 					</ul>
 			}
@@ -196,7 +200,7 @@ const ROWS = [
 	Install,
 	Unfree,
 	Position,
-	Platform,
+	Platforms,
 	Homepage,
 	License,
 	Maintainers,
