@@ -20,8 +20,8 @@
   },
   "dependencies": {
     "lodash": "^4.17.4",
-    "preact": "^8",
-    "preact-compat": "^3",
+    "preact": "^8.5.1",
+    "preact-compat": "^3.19.0",
     "query-string": "^6.4",
     "whatwg-fetch": "^3.0.0"
   }
