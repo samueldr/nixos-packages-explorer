@@ -87,7 +87,7 @@ const Results = ({attr, channel_data: {packages}, current_results, filtered_pack
 		return (
 			<div>
 				<div>
-					<Link merge={true} state={{attr: null}}>
+					<Link merge={true} state={{attr: null}} class="results--back">
 						Show all results
 					</Link>
 				</div>
