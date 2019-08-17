@@ -60,8 +60,8 @@ generate() {
 # The default one should be the current stable.
 SERIES=(
 	nixos-19.03
-	nixos-18.09
-	nixos-18.03
+	#nixos-18.09
+	#nixos-18.03
 	#nixos-17.09
 	#nixos-17.03
 	nixos-unstable
